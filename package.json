@@ -22,6 +22,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "react-spreadsheet": "^0.10.1",
+    "scheduler": "^0.26.0",
     "shadcn": "^2.6.3",
     "tailwind-merge": "^3.3.1"
   },
