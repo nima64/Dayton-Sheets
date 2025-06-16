@@ -28,14 +28,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
+        {/* <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
+        </ThemeProvider> */}
+          <h1 className="mb-4 mt-15 text-center text-4xl font-semibold leading-none tracking-tight text-gray-900 lg:text-3xl dark:text-white">RFQ Dayton Financial</h1>
           {children}
-        </ThemeProvider>
       </body>
     </html>
   );
