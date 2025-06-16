@@ -1,6 +1,6 @@
 // firebaseClient.ts
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 export const firebaseConfig = {
   apiKey: "AIzaSyAuCTuNXcKfzcJbisj97IRu5Au1ZnOLgfU",
@@ -13,7 +13,7 @@ export const firebaseConfig = {
   measurementId: "G-0NDW05E1C6"
 };
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 export { db };
