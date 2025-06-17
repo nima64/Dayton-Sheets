@@ -9,10 +9,11 @@ import { useEffect } from "react";
 export default function Login() {
   const router = useRouter();
   const user  = useAuthStatus()
+  console.log(`user: `,user);
   useEffect(() => {
     if (user) {
       // If the user is already logged in, redirect to the home page
-      router.push('/');
+      router.push('/sheet');
     }
   },[user, router]);
 
