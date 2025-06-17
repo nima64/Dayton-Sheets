@@ -1,64 +1,37 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { db } from "./firebase/firebase-client";
-import {
-  collection,
-  getDocs,
-} from "firebase/firestore";
+import { useRouter } from 'next/navigation';
 
-async function printRootCollection(collectionName: string) {
-  const colRef = collection(db, collectionName);
-  const snapshot = await getDocs(colRef);
-  snapshot.forEach(doc => {
-    console.log(doc.id, doc.data());
-  });
-}
 export default function Home() {
-  const [data, setData] = useState<any[]>([]);
+  const router = useRouter();
 
-  useEffect(() => {
-    // const fetchAllBuyersheets = async () => {
-    //   try {
-    //     const allBuyersheets: any[] = [];
-
-    //     // Step 1: Get all sheet documents
-    //     const sheetsSnapshot = await getDocs(collection(db, "sheets"));
-
-    //     // Step 2: For each sheet, fetch its buyersheets subcollection
-    //     for (const sheetDoc of sheetsSnapshot.docs) {
-    //       const sheetId = sheetDoc.id;
-    //       const buyersheetsRef = collection(
-    //         db,
-    //         `sheets/${sheetId}/buyersheets`
-    //       );
-
-    //       const buyersheetsSnapshot = await getDocs(buyersheetsRef);
-
-    //       buyersheetsSnapshot.forEach((buyerDoc) => {
-    //         allBuyersheets.push({
-    //           sheetId,
-    //           id: buyerDoc.id,
-    //           ...buyerDoc.data(),
-    //         });
-    //       });
-    //     }
-
-    //     console.log("All buyersheets:", allBuyersheets);
-    //     setData(allBuyersheets);
-    //   } catch (error) {
-    //     console.error("Error fetching Firestore data:", error);
-    //   }
-    // };
-
-    // fetchAllBuyersheets();
-  }, []);
-
-  printRootCollection("sheets");
   return (
-    <main className="content">
-      <h1>All Buyersheets (from all sheets)</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+    <main className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-4">
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold mb-2">Welcome to RFQ Central</h1>
+        <p className="text-gray-600 max-w-md mx-auto">
+          A platform where buyers create RFQ templates and sellers respond with price quotes and availability.
+        </p>
+      </div>
+
+      <div className="flex gap-4">
+        <button
+          onClick={() => router.push('/signup')}
+          className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition"
+        >
+          Sign Up
+        </button>
+        <button
+          onClick={() => router.push('/login')}
+          className="bg-gray-200 text-gray-800 px-6 py-3 rounded-md hover:bg-gray-300 transition"
+        >
+          Log In
+        </button>
+      </div>
+
+      <footer className="mt-12 text-sm text-gray-400">
+        © {new Date().getFullYear()} RFQ Central. All rights reserved.
+      </footer>
     </main>
   );
 }
