@@ -2,6 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { SelectDemo } from "./role-select";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/app/firebase/firebase-client";
 
 interface Signup1Props {
   heading?: string;
@@ -34,7 +37,15 @@ export default function SignupForm({
 }: Signup1Props) {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
+  const [userRole, setUserRole] = useState("");
   const [password, setPassword] = useState("");
+  const customSubmit = async () => {
+      const user = await handleSignUp(email, password);
+      if (user)
+        await setDoc(doc(db, "users", user.uid), { role: "admin"});
+      console.log("returned user:", user);
+
+  };
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -73,8 +84,14 @@ export default function SignupForm({
                 onChange={e => setPassword(e.target.value)}
               />
             </div>
+            <div className="flex flex-col gap-2">
+              <SelectDemo value={"buyer"} onChange={(str:string)=>setUserRole(str)}/>
+              {/* <Button onClick={()=>handleSignUp(email, password)} type="submit" className="mt-2 w-full">
+                {signupText}
+              </Button> */}
+            </div>
             <div className="flex flex-col gap-4">
-              <Button onClick={()=>handleSignUp(email, password)} type="submit" className="mt-2 w-full">
+              <Button onClick={customSubmit} type="submit" className="mt-2 w-full">
                 {signupText}
               </Button>
               {/* <Button variant="outline" className="w-full">
