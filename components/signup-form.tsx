@@ -32,7 +32,7 @@ export default function SignupForm({
   googleText = "Sign up with Google",
   signupText = "Create an account",
   loginText = "Already have an account?",
-  loginUrl = "#",
+  loginUrl = "/login",
   onSignUp: handleSignUp
 }: Signup1Props) {
   const [email, setEmail] = useState("");
