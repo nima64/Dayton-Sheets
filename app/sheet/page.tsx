@@ -3,19 +3,45 @@
 import Spreadsheet from "react-spreadsheet";
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuthStatus } from "../firebase/auth-service";
+import { auth, useAuthStatus } from "../firebase/auth-service";
 import { useEffect, useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase-client";
+
+export async function getUserRole(user:any) {
+  const userDoc = await getDoc(doc(db, "users", user.uid));
+  if (userDoc.exists()) {
+    return userDoc.data().role;
+  }
+  return null;
+}
 
 export default function SpreadSheet (){
   const searchParams = useSearchParams();
   const router = useRouter();
   const user = useAuthStatus();
 
-  useEffect(() => {
+
+  const auth = getAuth();
+  onAuthStateChanged(auth, async (user) => {
+
+  if (user) {
+    console.log("User is signed in:", user);
+
+  const role  = await getUserRole(user);
+  console.log(`User role: ${role}`);
+  } else {
+    // User is signed out
+    // ...
+  }
+});
+
+
+ useEffect(() => {
     console.log(`user: `,user);
-    if(!user)
-        router.push('/');
-    
+    // if(!user)
+    //     router.push('/');
   }, []);
 
   
