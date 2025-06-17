@@ -91,7 +91,7 @@ export default function SignupForm({
               </Button> */}
             </div>
             <div className="flex flex-col gap-4">
-              <Button onClick={customSubmit} type="submit" className="mt-2 w-full">
+              <Button onClick={()=>handleSignUp(email, password, undefined, undefined, "seller")} type="submit" className="mt-2 w-full">
                 {signupText}
               </Button>
               {/* <Button variant="outline" className="w-full">

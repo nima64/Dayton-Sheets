@@ -1,6 +1,7 @@
 import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence,createUserWithEmailAndPassword,updateProfile, onAuthStateChanged } from "firebase/auth";
-import { app } from './firebase-client'; // Adjust the import path as necessary
+import { app, db } from './firebase-client'; // Adjust the import path as necessary
 import { useEffect, useState } from "react";
+import { doc, setDoc } from "firebase/firestore";
 
 const auth = getAuth(app);
 
@@ -19,11 +20,12 @@ const handleSignIn = async (email: string, password: string) => {
     return null;
 };
 
-const handleSignUp = async ( email: string, password: string, name? : string, router?: any,) => { try {
+const handleSignUp = async ( email: string, password: string, name? : string, router?: any, role: "buyer" | "seller"="buyer") => { try {
         await setPersistence(auth, browserLocalPersistence);
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         // name && await updateProfile(userCredential.user, {displayName: name});
+        await registerUserInFirestore(user, role);
         console.log("User registered:", user);
         // router && router.push('/');
     } catch (error) {
@@ -32,6 +34,16 @@ const handleSignUp = async ( email: string, password: string, name? : string, ro
         console.error("Sign-up error for:", errorCode, errorMessage);
         console.error(`user: ${email}, password: ${password}, name: ${name}`);
     }
+};
+
+// helper function to register user in Firestore
+const registerUserInFirestore = async (user: any, role: "buyer" | "seller") => {
+  await setDoc(doc(db, "users", user.uid), {
+    uid: user.uid,
+    email: user.email,
+    role,
+    createdAt: new Date(),
+  });
 };
 
 function useAuthStatus() {
