@@ -3,18 +3,19 @@ import { app } from './firebase-client'; // Adjust the import path as necessary
 
 const auth = getAuth(app);
 
-const handleSignIn = async (router: any, email: string, password: string) => {
+const handleSignIn = async (email: string, password: string) => {
     try {
         await setPersistence(auth, browserLocalPersistence);
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         console.log("User signed in:", user);
-        router.push('/track');
+        return user;
     } catch (error) {
         const errorCode = (error as any).code;
         const errorMessage = (error as any).message;
         console.error("Sign-in error:", errorCode, errorMessage);
     }
+    return null;
 };
 
 const handleSignUp = async ( email: string, password: string, name? : string, router?: any,) => { try {
