@@ -1,4 +1,4 @@
-import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence,createUserWithEmailAndPassword,updateProfile, onAuthStateChanged } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence,createUserWithEmailAndPassword,updateProfile, onAuthStateChanged, browserSessionPersistence } from "firebase/auth";
 import { app, db } from './firebase-client'; // Adjust the import path as necessary
 import { useEffect, useState } from "react";
 import { doc, setDoc } from "firebase/firestore";
@@ -7,7 +7,7 @@ const auth = getAuth(app);
 
 const handleSignIn = async (email: string, password: string) => {
     try {
-        await setPersistence(auth, browserLocalPersistence);
+        await setPersistence(auth, browserSessionPersistence);
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         console.log("User signed in:", user);
@@ -21,7 +21,7 @@ const handleSignIn = async (email: string, password: string) => {
 };
 
 const handleSignUp = async ( email: string, password: string, name? : string, router?: any, role: "buyer" | "seller"="buyer") => { try {
-        await setPersistence(auth, browserLocalPersistence);
+        await setPersistence(auth, browserSessionPersistence);
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         // name && await updateProfile(userCredential.user, {displayName: name});
