@@ -1,5 +1,6 @@
-import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence,createUserWithEmailAndPassword,updateProfile } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence,createUserWithEmailAndPassword,updateProfile, onAuthStateChanged } from "firebase/auth";
 import { app } from './firebase-client'; // Adjust the import path as necessary
+import { useEffect, useState } from "react";
 
 const auth = getAuth(app);
 
@@ -33,4 +34,17 @@ const handleSignUp = async ( email: string, password: string, name? : string, ro
     }
 };
 
-export { auth, handleSignIn, handleSignUp };
+function useAuthStatus() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser:any) => {
+      setUser(firebaseUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  return user; // null if not logged in, user object if logged in
+}
+
+export { auth, handleSignIn, handleSignUp, useAuthStatus };
