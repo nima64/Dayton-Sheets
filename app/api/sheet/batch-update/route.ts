@@ -1,12 +1,10 @@
 import { db } from '@/app/firebase/firebase-client';
-import { exec } from 'child_process';
-import { arrayUnion, collection, doc, getDoc, getDocs, getFirestore, query, updateDoc, where } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Define the types for our request body
 interface Update {
-  row: number;
-  column: string;
+  rowId: string;
+  col: string;
   value: string | number;
 }
 
@@ -17,88 +15,50 @@ interface BatchUpdateRequest {
   };
 }
 
-type userRole = 'seller' | 'buyer' | 'admin';
-
-async function executeBatchUpdateSeller(op: any,updatesData:any, userRole: userRole, templateId: string, sellerId: string, firebase: any) {
-  if (userRole == 'seller') {
-    // Run the batch update logic for sellers
-    console.log('Executing batch update for seller:', op);
-    console.log('executing batch', sellerId, templateId);
-
-    const copyRef = doc(
-      db,
-      "sellers", sellerId,
-      "copies", templateId
-    );
-
-    // 2) Define the new row object you want to push
-    const newRow = {
-      rowId: 'r3',
-      make: 'THIS FUCKING WOKRS',
-      model: 'Srp-F310II',
-      config: 'SRP-F310IICOSK',
-      price: '100',
-      qty: '5'
-    };
-
-    // 3) Atomically add it to the `rows` array
-
-    await updateDoc(copyRef, {
-      rows: arrayUnion(newRow)
-    });
-
-    console.log("New row added!");
-
-
-  updatesData.forEach(({ rowId, col, value }:any) => {
-    console.log(`Updating row ${rowId}, column ${col} with value: ${value}`);
-  });
-
-  }
-}
-
-
 export async function POST(req: NextRequest) {
   try {
-    // Parse the request body
+    const url = new URL(req.url);
+    const sellerId = url.searchParams.get("user");
+    const templateId = url.searchParams.get("templateId");
+
+    if (!sellerId || !templateId) {
+      return NextResponse.json({ error: "Missing user or templateId" }, { status: 400 });
+    }
+
     const body: BatchUpdateRequest = await req.json();
-    console.log('Received batch update request:', body.data.updates);
+    const updates = body.data?.updates ?? [];
 
-    // // Validate the operation type
-    // if (body.op !== 'batch_update') {
-    //   return NextResponse.json(
-    //     { error: 'Invalid operation type' },
-    //     { status: 400 }
-    //   );
-    // }
+    if (!Array.isArray(updates)) {
+      return NextResponse.json({ error: "Invalid updates array" }, { status: 400 });
+    }
 
-    // // Validate that updates exist
-    // if (!body.data?.updates || !Array.isArray(body.data.updates)) {
-    //   return NextResponse.json(
-    //     { error: 'Updates array is required' },
-    //     { status: 400 }
-    //   );
-    // }
+    const sellerDocRef = doc(db, "sellers", sellerId, "copies", templateId);
+    const sellerSnap = await getDoc(sellerDocRef);
 
-    executeBatchUpdateSeller("someoperation",body.data.updates, 'seller', 'template-5e89c3c3-2dbd-4acc-9030-a367c470e19a', 'HvJluUW53gNP28vXw74nSNMzT2Y2', 'firebase');
+    if (!sellerSnap.exists()) {
+      return NextResponse.json({ error: "Seller sheet not found" }, { status: 404 });
+    }
 
-    // Process the updates
-    const { updates } = body.data;
+    const sellerData = sellerSnap.data();
+    const currentRows = Array.isArray(sellerData.rows) ? [...sellerData.rows] : [];
 
-    // TODO: Add your logic here to handle the updates
-    // For example, saving to database, etc.
-
-    // Return success response
-    return NextResponse.json({
-      success: true,
-      updatedCount: updates.length
+    const updatedRows = currentRows.map((row) => {
+      const updatesForRow = updates.filter((u) => u.rowId === row.rowId);
+      const updated = { ...row };
+      updatesForRow.forEach(({ col, value }) => {
+        updated[col] = value;
+      });
+      return updated;
     });
 
+    await updateDoc(sellerDocRef, { rows: updatedRows });
+
+    return NextResponse.json({
+      success: true,
+      updatedCount: updates.length,
+    });
   } catch (error) {
     console.error('Batch update error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
