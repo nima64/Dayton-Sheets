@@ -78,6 +78,10 @@ export default function SpreadSheet() {
       <Spreadsheet
         data={data}
         columnLabels={columnLabels}
+        onCellCommit= {(prevCell, nextCell, coords) => {
+          console.log("Cell commit event:", prevCell, nextCell, coords);
+        }}
+          // console.log(`Cell committed at row ${row}, column ${col}:`, cell);}}
       />
       </div>
   );

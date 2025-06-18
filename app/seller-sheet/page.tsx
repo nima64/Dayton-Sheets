@@ -9,12 +9,44 @@ import { auth } from "../firebase/auth-service";
 import { db } from "../firebase/firebase-client";
 
 
+const queries = 'user=seller1';
+
+const dirtyCells = new Map();
+function runBatchUpdater(dirtyCells:Map<any,any>){
+    setInterval(() => {
+      if (dirtyCells.size === 0) return;
+
+      const updates = Array.from(dirtyCells.values());
+      console.log('Sending batch update:', updates);
+
+      fetch(`/api/sheet/batch-update?${queries}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          op: 'batch_update',
+          data: { updates }
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log('Update success:', data);
+          dirtyCells.clear();
+        })
+        .catch(err => {
+          console.error('Update failed:', err);
+        });
+    }, 5000);
+}
+
+runBatchUpdater(dirtyCells);
+
+
+
 export default function SellerSheetPage() {
   const [sheetRows, setSheetRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-    const [hasRun, setHasRun] = useState(false);
+  const [hasRun, setHasRun] = useState(false);
   const [columnLabels, setColumnLabels] = useState([
-
     "Make",
     "Model",
     "Specific Configuration",
@@ -27,6 +59,7 @@ export default function SellerSheetPage() {
   const templateId = params.get("templateId");
 
   useEffect(() => {
+    // dirtyCells.set(`${0}|${0}`, { '0', '1', "this is a cell eidit" });
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       console.log("AUth changed!!")
       if (!(firebaseUser && templateId))
@@ -84,6 +117,15 @@ export default function SellerSheetPage() {
       <Spreadsheet
         data={sheetRows}
         columnLabels={columnLabels}
+        onCellCommit={(prevCell, nextCell, coords) => {
+          console.log("Cell commit event:", prevCell, nextCell, coords);
+          if (!coords || !nextCell) 
+            return;
+          const { row,column : col  } = coords;
+          const cellValue = nextCell.value;
+          // dirtyCells.set(`${row}|${col}`, { rowId: sheetRows[row]{0}.value, col, value: cellValue });
+          dirtyCells.set(`${row}|${col}`, { rowId:row, col:col, value: cellValue });
+        }}
       />
     </div>
   );
