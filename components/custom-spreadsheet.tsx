@@ -8,11 +8,19 @@ import {
     RowData
 } from "@tanstack/react-table";
 
+
 declare module '@tanstack/react-table' {
     interface TableMeta<TData extends RowData> {
         updateData: (rowIndex: number, columnId: string, value: unknown) => void
+        onKeyUp?: spreadSheetProps['onKeyUp'] ;  // Add this line
+        onChange?: spreadSheetProps['onChange'];  // Add this line
     }
 }
+
+type spreadSheetProps = {    
+    onKeyUp?: (e: React.KeyboardEvent) => void;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>, row?:number, colId?:string) => void;
+};
 
 type Printer = {
     rowId: string;
@@ -23,11 +31,11 @@ type Printer = {
 };
 
 const initialData: Printer[] = [
-    { rowId: 'r1', make: 'HP', model: 'OfficeJet Pro 9015', config: 'Duplex',qty:"1" },
-    { rowId: 'r2', make: 'Canon', model: 'PIXMA TR4520', config: 'Color',qty:"1" },
-    { rowId: 'r3', make: 'Epson', model: 'EcoTank ET-2760', config: 'Wireless',qty:"1" },
-    { rowId: 'r4', make: 'Brother', model: 'HL-L2350DW', config: 'Monochrome' ,qty:"1"},
-    { rowId: 'r5', make: 'Lexmark', model: 'MS421dn', config: 'Duplex' ,qty:"1"},
+    { rowId: '1', make: 'HP', model: 'OfficeJet Pro 9015', config: 'Duplex',qty:"1" },
+    { rowId: '2', make: 'Canon', model: 'PIXMA TR4520', config: 'Color',qty:"1" },
+    { rowId: '3', make: 'Epson', model: 'EcoTank ET-2760', config: 'Wireless',qty:"1" },
+    { rowId: '4', make: 'Brother', model: 'HL-L2350DW', config: 'Monochrome' ,qty:"1"},
+    { rowId: '5', make: 'Lexmark', model: 'MS421dn', config: 'Duplex' ,qty:"1"},
 ];
 
 const columnHelper = createColumnHelper<Printer>();
@@ -82,14 +90,18 @@ const defaultColumn: Partial<ColumnDef<Printer>> = {
             <input
                 className="w-full px-2 py-1 font-medium text-left border-0 bg-transparent focus:bg-white focus:border focus:border-blue-300 focus:outline-none "
                 value={value as string}
-                onChange={e => setValue(e.target.value)}
+                onChange={e => {
+                    setValue(e.target.value);
+                    table.options.meta?.onChange && table.options.meta?.onChange(e, index, id);}}
                 onBlur={onBlur}
+                onKeyUp={table.options.meta?.onKeyUp} // Add this line
             />
         );
     },
 };
 
-export default function CustomSpreadSheet() {
+
+export default function CustomSpreadSheet({onKeyUp, onChange}: spreadSheetProps) {
     const [data, setData] = React.useState<Printer[]>(initialData);
 
     const table = useReactTable({
@@ -112,6 +124,8 @@ export default function CustomSpreadSheet() {
                     })
                 );
             },
+            onKeyUp,
+            onChange
         },
     });
 

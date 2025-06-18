@@ -8,6 +8,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth } from "../firebase/auth-service";
 import { db } from "../firebase/firebase-client";
 
+import CustomSpreadSheet from "@/components/custom-spreadsheet";
 
 const queries = 'user=seller1';
 
@@ -110,23 +111,16 @@ export default function SellerSheetPage() {
     return () => unsubscribe();
   }, []);
 
-  if (loading) return <div className="p-4 text-center">Loading sheet...</div>;
+  // if (loading) return <div className="p-4 text-center">Loading sheet...</div>;
 
   return (
     <div className="flex mt-13 justify-center min-h-screen">
-      <Spreadsheet
-        data={sheetRows}
-        columnLabels={columnLabels}
-        onCellCommit={(prevCell, nextCell, coords) => {
-          console.log("Cell commit event:", prevCell, nextCell, coords);
-          if (!coords || !nextCell) 
-            return;
-          const { row,column : col  } = coords;
-          const cellValue = nextCell.value;
-          // dirtyCells.set(`${row}|${col}`, { rowId: sheetRows[row]{0}.value, col, value: cellValue });
-          dirtyCells.set(`${row}|${col}`, { rowId:row, col:col, value: cellValue });
-        }}
-      />
+      <CustomSpreadSheet onChange={(e, row, col)=>{
+        const value = e.currentTarget.value;
+        console.log('onchange',value, row, col)
+        dirtyCells.set(`${row}|${col}`, { rowId: row, col: col, value: value });
+        console.log(`Edited ${row} / ${col} = ${value}`);
+        }}/>
     </div>
   );
 }
