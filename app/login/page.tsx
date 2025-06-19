@@ -5,14 +5,20 @@ import { handleSignIn, useAuthStatus } from "../firebase/auth-service";
 import { useEffect } from "react";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../firebase/firebase-client";
+import { User, UserCredential } from "firebase/auth";
 
 export default function Login() {
   const router = useRouter();
-  const user: { uid: string } | null = useAuthStatus();
+  const user: User | null = useAuthStatus();
+  // user.then((user: User | null) => {
+  //   if (user) {
+  //     user.ui
+  //     console.log("User is logged in:", user);
 
   useEffect(() => {
     const checkRoleAndRedirect = async () => {
-      if (!user) return;
+      if (!user) return;  // Now TypeScript knows user is User type after this checka
+      console.log("User is logged in:", user);
 
       try {
         const userDocRef = doc(db, "users", user.uid);

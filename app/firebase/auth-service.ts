@@ -1,4 +1,4 @@
-import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence,createUserWithEmailAndPassword,updateProfile, onAuthStateChanged, browserSessionPersistence } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence,createUserWithEmailAndPassword,updateProfile, onAuthStateChanged, browserSessionPersistence, User } from "firebase/auth";
 import { app, db } from './firebase-client'; // Adjust the import path as necessary
 import { useEffect, useState } from "react";
 import { doc, setDoc } from "firebase/firestore";
@@ -47,7 +47,7 @@ const registerUserInFirestore = async (user: any, role: "buyer" | "seller") => {
 };
 
 function useAuthStatus() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User |null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser:any) => {
