@@ -1,10 +1,11 @@
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { SelectDemo } from "./role-select";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/app/firebase/firebase-client";
+import { useRouter } from "next/navigation";
 
 interface Signup1Props {
   heading?: string;
@@ -36,32 +37,21 @@ export default function SignupForm({
   onSignUp: handleSignUp
 }: Signup1Props) {
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [userRole, setUserRole] = useState("");
+  const [userRole, setUserRole] = useState("buyer");
   const [password, setPassword] = useState("");
-  const customSubmit = async () => {
-      const user = await handleSignUp(email, password);
-      if (user)
-        await setDoc(doc(db, "users", user.uid), { role: "admin"});
-      console.log("returned user:", user);
+  const router = useRouter();
 
+  const handleSubmit = async () => {
+    const success = await handleSignUp(email, password, undefined, undefined, userRole);
+    if (success) {
+      router.push("/login");
+    }
   };
 
   return (
     <div className="flex h-full items-center justify-center">
       <div className="flex w-full max-w-sm flex-col items-center gap-y-8 rounded-md border border-muted bg-white px-6 py-12 shadow-md">
         <div className="flex flex-col items-center gap-y-2">
-          {/* Logo */}
-          {/* <div className="flex items-center gap-1 lg:justify-start">
-              <a href={logo.url}>
-                <img
-                  src={logo.src}
-                  alt={logo.alt}
-                  title={logo.title}
-                  className="h-10"
-                />
-              </a>
-            </div> */}
           {heading && <h1 className="text-3xl font-semibold">{heading}</h1>}
         </div>
         <div className="flex w-full flex-col gap-8">
@@ -85,19 +75,12 @@ export default function SignupForm({
               />
             </div>
             <div className="flex flex-col gap-2">
-              <SelectDemo value={"buyer"} onChange={(str:string)=>setUserRole(str)}/>
-              {/* <Button onClick={()=>handleSignUp(email, password)} type="submit" className="mt-2 w-full">
-                {signupText}
-              </Button> */}
+              <SelectDemo value="buyer" onChange={(str: string) => setUserRole(str)} />
             </div>
             <div className="flex flex-col gap-4">
-              <Button onClick={()=>handleSignUp(email, password, undefined, undefined, userRole)} type="submit" className="mt-2 w-full">
+              <Button onClick={handleSubmit} type="submit" className="mt-2 w-full">
                 {signupText}
               </Button>
-              {/* <Button variant="outline" className="w-full">
-                <FcGoogle className="mr-2 size-5" />
-                {googleText}
-              </Button> */}
             </div>
           </div>
         </div>
@@ -114,4 +97,3 @@ export default function SignupForm({
     </div>
   );
 };
-
