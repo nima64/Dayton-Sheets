@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { db } from '../firebase/firebase-client';
 import {
@@ -12,7 +12,7 @@ import {
   where
 } from 'firebase/firestore';
 
-export default function BuyerSheetView() {
+function BuyerSheetView() {
   const searchParams = useSearchParams();
   const templateId = searchParams.get('templateId');
 
@@ -137,5 +137,14 @@ export default function BuyerSheetView() {
 
       </table>
     </div>
+  );
+}
+
+export default function Page(){
+
+  return (
+    <Suspense>
+      <BuyerSheetView></BuyerSheetView>
+    </Suspense>
   );
 }

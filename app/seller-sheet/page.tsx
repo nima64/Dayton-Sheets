@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -11,7 +11,7 @@ import { db } from "../firebase/firebase-client";
 
 const dirtyCells = new Map<string, any>();
 
-export default function SellerSheetPage() {
+function SellerSheetPage() {
   const [sheetRows, setSheetRows] = useState<any[]>([]);
   const [rowIds, setRowIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -126,7 +126,6 @@ export default function SellerSheetPage() {
       >
         ← Back to Dashboard
       </button>
-
       <CustomSpreadSheet
         data={sheetRows}
         role="seller"
@@ -137,8 +136,17 @@ export default function SellerSheetPage() {
           dirtyCells.set(`${row}|${col}`, { rowId, col, value });
         }}
       />
+
     </div>
   );
+}
+
+export default function Page(){
+  return (
+    <Suspense fallback={<p>Loading weather...</p>}>
+      <SellerSheetPage></SellerSheetPage>
+    </Suspense>
+  )
 }
 
 function useHasMounted() {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from 'next/navigation';
 import { onAuthStateChanged } from "firebase/auth";
 import {
@@ -10,7 +10,7 @@ import { auth } from "../firebase/auth-service";
 import { db } from "../firebase/firebase-client";
 import CustomSpreadSheet from "@/components/custom-spreadsheet";
 
-export default function BuyerEditSheetPage() {
+function BuyerEditSheetPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [sheetData, setSheetData] = useState<any[]>([]);
   const [rowIds, setRowIds] = useState<string[]>([]);
@@ -175,4 +175,12 @@ export default function BuyerEditSheetPage() {
       </div>
     </div>
   );
+}
+
+export default function Page(){
+  return (
+    <Suspense>
+      <BuyerEditSheetPage></BuyerEditSheetPage>
+    </Suspense>
+  )
 }
