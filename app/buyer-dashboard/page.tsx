@@ -74,19 +74,28 @@ export default function BuyerDashboard() {
         <p>No sheets created yet.</p>
       ) : (
         <ul className="space-y-4">
-          {sheets.map((sheet) => (
-            <li key={sheet.templateId} className="border p-4 rounded shadow">
-              <h2 className="text-lg font-semibold">{sheet.title}</h2>
-              <p className="text-sm text-gray-500">Category: {sheet.category}</p>
-              <Link
-                href={`/buyer-edit-sheet?templateId=${sheet.templateId}`}
-                className="text-blue-600 underline text-sm"
-              >
-                Edit Sheet
-              </Link>
-            </li>
-          ))}
-        </ul>
+  {sheets.map((sheet) => (
+    <li key={sheet.templateId} className="border p-4 rounded shadow">
+      <h2 className="text-lg font-semibold">{sheet.title}</h2>
+      <p className="text-sm text-gray-500">Category: {sheet.category}</p>
+      <div className="flex gap-4 mt-2">
+        <Link
+          href={`/buyer-edit-sheet?templateId=${sheet.templateId}`}
+          className="text-blue-600 underline text-sm"
+        >
+          Edit Sheet
+        </Link>
+        <Link
+          href={`/buyer-display?templateId=${sheet.templateId}`}
+          className="text-green-600 underline text-sm"
+        >
+          View Offers
+        </Link>
+      </div>
+    </li>
+  ))}
+</ul>
+
       )}
     </div>
   );

@@ -20,21 +20,29 @@ const handleSignIn = async (email: string, password: string) => {
     return null;
 };
 
-const handleSignUp = async ( email: string, password: string, name? : string, router?: any, role: "buyer" | "seller"="buyer") => { try {
-        await setPersistence(auth, browserSessionPersistence);
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        // name && await updateProfile(userCredential.user, {displayName: name});
-        await registerUserInFirestore(user, role);
-        console.log("User registered:", user);
-        // router && router.push('/');
-    } catch (error) {
-        const errorCode = (error as any).code;
-        const errorMessage = (error as any).message;
-        console.error("Sign-up error for:", errorCode, errorMessage);
-        console.error(`user: ${email}, password: ${password}, name: ${name}`);
-    }
+const handleSignUp = async (
+  email: string,
+  password: string,
+  name?: string, // unused
+  router?: any,  // unused here
+  role: "buyer" | "seller" = "buyer"
+): Promise<boolean> => {
+  try {
+    await setPersistence(auth, browserSessionPersistence);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    await registerUserInFirestore(user, role);
+    console.log("User registered:", user);
+    return true;
+  } catch (error) {
+    const errorCode = (error as any).code;
+    const errorMessage = (error as any).message;
+    console.error("Sign-up error for:", errorCode, errorMessage);
+    console.error(`user: ${email}, password: ${password}`);
+    return false;
+  }
 };
+
 
 // helper function to register user in Firestore
 const registerUserInFirestore = async (user: any, role: "buyer" | "seller") => {

@@ -5,20 +5,14 @@ import { handleSignIn, useAuthStatus } from "../firebase/auth-service";
 import { useEffect } from "react";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../firebase/firebase-client";
-import { User, UserCredential } from "firebase/auth";
 
 export default function Login() {
   const router = useRouter();
-  const user: User | null = useAuthStatus();
-  // user.then((user: User | null) => {
-  //   if (user) {
-  //     user.ui
-  //     console.log("User is logged in:", user);
+  const user: { uid: string } | null = useAuthStatus();
 
   useEffect(() => {
     const checkRoleAndRedirect = async () => {
-      if (!user) return;  // Now TypeScript knows user is User type after this checka
-      console.log("User is logged in:", user);
+      if (!user) return;
 
       try {
         const userDocRef = doc(db, "users", user.uid);
@@ -36,7 +30,7 @@ export default function Login() {
           }
         } else {
           console.warn("User document not found");
-          router.push("/");
+          router.push("/seller-dashboard");
         }
       } catch (error) {
         console.error("Error fetching user role:", error);
