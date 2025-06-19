@@ -21,12 +21,32 @@ export default function CreateSheet() {
       rowId: `r${i + 1}`,
       make: '',
       model: '',
-      config: ''
+      config: '',
+      price1: '',
+      qty1: '',
+      price2: '',
+      qty2: '',
+      price3: '',
+      qty3: '',
+      substitution: '',
+      notes: ''
     }));
   });
 
   const columnLabels = ["Make", "Model", "Specific Configuration"];
-  const columnIds = ["make", "model", "config"];
+  const columnIds = [
+    "make",
+    "model",
+    "config",
+    "price1",
+    "qty1",
+    "price2",
+    "qty2",
+    "price3",
+    "qty3",
+    "substitution",
+    "notes",
+  ];
 
   useEffect(() => {
     const auth = getAuth();
@@ -129,7 +149,6 @@ export default function CreateSheet() {
         <CustomSpreadSheet
           data={sheetDataFlat}
           columnIds={columnIds}
-          columnLabels={columnLabels}
           onChange={(e, row, colId) => {
             const value = e.currentTarget.value;
             const newData = [...sheetDataFlat];

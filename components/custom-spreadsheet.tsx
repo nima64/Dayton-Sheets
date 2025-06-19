@@ -15,13 +15,18 @@ declare module '@tanstack/react-table' {
         onKeyUp?: SpreadSheetProps['onKeyUp'];
         onChange?: SpreadSheetProps['onChange'];
     }
+        interface ColumnMeta<TData extends RowData, TValue> {
+        readOnly?: boolean;
+    }
+
 }
 
 type SpreadSheetProps = {
     data: GenericRow[];
     onKeyUp?: (e: React.KeyboardEvent) => void;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>, row?: number, colId?: string) => void;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>, row: number, colId: string) => void;
     role?: 'buyer' | 'seller';
+    columnIds?: string[];
 };
 
 export type GenericRow = {
@@ -183,8 +188,8 @@ export default function CustomSpreadSheet({ data, onKeyUp, onChange, role = 'buy
     });
 
     return (
-        <div className="p-2 w-full max-w-full overflow-x-auto">
-            <div className="min-w-[1000px] border border-gray-300 rounded-sm">
+        <div className="p-2 w-full overflow-auto h-svh scroll-snap-y-container">
+            <div className="h-9/12 overflow-auto overflow-x-scroll border border-gray-300 rounded-sm">
                 <table className="min-w-full bg-white text-sm" style={{ width: table.getCenterTotalSize() }}>
                     <thead>
                         {table.getHeaderGroups().map(headerGroup => (
@@ -200,18 +205,6 @@ export default function CustomSpreadSheet({ data, onKeyUp, onChange, role = 'buy
                                         }}
                                     >
                                         {flexRender(header.column.columnDef.header, header.getContext())}
-                                        <div
-                                            onMouseDown={header.getResizeHandler()}
-                                            onTouchStart={header.getResizeHandler()}
-                                            className={`absolute right-0 top-0 h-full w-1 bg-gray-400 cursor-col-resize hover:bg-blue-500 ${
-                                                header.column.getIsResizing() ? 'bg-blue-500' : ''
-                                            }`}
-                                            style={{
-                                                transform: header.column.getIsResizing()
-                                                    ? `translateX(${table.getState().columnSizingInfo.deltaOffset}px)`
-                                                    : '',
-                                            }}
-                                        />
                                     </th>
                                 ))}
                             </tr>
