@@ -3,97 +3,85 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
-import { SelectDemo } from "./role-select";
 import { useRouter } from "next/navigation";
 
-interface Signup1Props {
+interface SignupFormProps {
   heading?: string;
-  logo?: {
-    url: string;
-    src: string;
-    alt: string;
-    title?: string;
-  };
-  signupText?: string;
-  googleText?: string;
-  loginText?: string;
-  loginUrl?: string;
-  onSignUp?: any;
+  onSignUp: (email: string, password: string, name?: string, router?: any, role?: "buyer" | "seller") => Promise<boolean>;
 }
 
-export default function SignupForm({
-  heading,
-  logo = {
-    url: "https://www.shadcnblocks.com",
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-wordmark.svg",
-    alt: "logo",
-    title: "shadcnblocks.com",
-  },
-  googleText = "Sign up with Google",
-  signupText = "Create an account",
-  loginText = "Already have an account?",
-  loginUrl = "/login",
+export default function SellerSignupForm({
+  heading = "Create Seller Account",
   onSignUp: handleSignUp
-}: Signup1Props) {
+}: SignupFormProps) {
   const [email, setEmail] = useState("");
-  const [userRole, setUserRole] = useState("buyer");
-  const [password, setPassword] = useState("");
   const router = useRouter();
+  // fixed default password for all sellers
+  const DEFAULT_PASSWORD = "123456";
 
-  const handleSubmit = async () => {
-    const success = await handleSignUp(email, password, undefined, undefined, userRole);
+  const onSubmit = async () => {
+    if (!email) {
+      alert("Please enter an email");
+      return;
+    }
+    // attempt sign-up
+    const success = await handleSignUp(
+      email.trim().toLowerCase(),
+      DEFAULT_PASSWORD,
+      undefined,
+      undefined,
+      "seller"
+    );
     if (success) {
-      router.push("/login");
+      alert("Seller created! Default password is “123456”.");
+      router.push("/login"); 
+    } else {
+      alert("Signup failed. Check console for details.");
     }
   };
 
   return (
     <div className="flex h-full items-center justify-center">
-      <div className="flex w-full max-w-sm flex-col items-center gap-y-8 rounded-md border border-muted bg-white px-6 py-12 shadow-md">
-        <div className="flex flex-col items-center gap-y-2">
-          {heading && <h1 className="text-3xl font-semibold">{heading}</h1>}
-        </div>
-        <div className="flex w-full flex-col gap-8">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <Input
-                type="email"
-                placeholder="Email"
-                required
-                onChange={e => setEmail(e.target.value)}
-                className="bg-white"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Input
-                type="password"
-                placeholder="Password"
-                required
-                className="bg-white"
-                onChange={e => setPassword(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <SelectDemo value="buyer" onChange={(str: string) => setUserRole(str)} />
-            </div>
-            <div className="flex flex-col gap-4">
-              <Button onClick={handleSubmit} type="submit" className="mt-2 w-full">
-                {signupText}
-              </Button>
-            </div>
+      <div className="w-full max-w-sm bg-white p-6 rounded-md shadow-md">
+        {heading && <h1 className="text-2xl font-semibold mb-4">{heading}</h1>}
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Seller Email</label>
+            <Input
+              type="email"
+              placeholder="seller@example.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="w-full bg-white"
+              required
+            />
           </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Password</label>
+            <Input
+              type="text"
+              value={DEFAULT_PASSWORD}
+              disabled
+              className="w-full bg-gray-100 text-gray-700"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              All sellers share this default password.
+            </p>
+          </div>
+          <Button onClick={onSubmit} className="w-full">
+            Create Seller
+          </Button>
         </div>
-        <div className="flex justify-center gap-1 text-sm text-muted-foreground">
-          <p>{loginText}</p>
-          <a
-            href={loginUrl}
-            className="font-medium text-primary hover:underline"
-          >
+
+        <p className="mt-6 text-sm text-gray-500">
+          After creating, sellers can log in via the{" "}
+          <a href="/login" className="text-blue-600 hover:underline">
             Login
-          </a>
-        </div>
+          </a>{" "}
+          page.
+        </p>
       </div>
     </div>
   );
-};
+}
