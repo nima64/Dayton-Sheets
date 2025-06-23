@@ -1,3 +1,4 @@
+// app/api/sheet/batch-update/route.ts
 import { db } from '@/app/firebase/firebase-client';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { NextRequest, NextResponse } from 'next/server';
@@ -18,47 +19,91 @@ interface BatchUpdateRequest {
 export async function POST(req: NextRequest) {
   try {
     const url = new URL(req.url);
-    const sellerId = url.searchParams.get("user");
-    const templateId = url.searchParams.get("templateId");
+    const sellerId = url.searchParams.get('user');
+    const templateId = url.searchParams.get('templateId');
 
     if (!sellerId || !templateId) {
-      return NextResponse.json({ error: "Missing user or templateId" }, { status: 400 });
+      console.error('batch-update missing user or templateId');
+      return NextResponse.json(
+        { error: 'Missing user or templateId' },
+        { status: 400 }
+      );
     }
 
     const body: BatchUpdateRequest = await req.json();
-    const updates = body.data?.updates ?? [];
+    const updates = Array.isArray(body.data?.updates)
+      ? (body.data.updates as Update[])
+      : [];
 
-    if (!Array.isArray(updates)) {
-      return NextResponse.json({ error: "Invalid updates array" }, { status: 400 });
+    console.groupCollapsed(
+      `[batch-update] Received ${updates.length} updates → seller=${sellerId} template=${templateId}`
+    );
+    updates.forEach((u, i) =>
+      console.log(
+        `  [#${i}] rowId=${u.rowId} col=${u.col} value=${JSON.stringify(
+          u.value
+        )}`
+      )
+    );
+    console.groupEnd();
+
+    if (!updates.length) {
+      return NextResponse.json({ success: true, failed: [] });
     }
 
-    const sellerDocRef = doc(db, "sellers", sellerId, "copies", templateId);
+    // Fetch existing seller copy
+    const sellerDocRef = doc(db, 'sellers', sellerId, 'copies', templateId);
     const sellerSnap = await getDoc(sellerDocRef);
-
     if (!sellerSnap.exists()) {
-      return NextResponse.json({ error: "Seller sheet not found" }, { status: 404 });
+      console.error('[batch-update] seller copy not found');
+      return NextResponse.json(
+        { error: 'Seller sheet not found', success: false, failed: updates },
+        { status: 404 }
+      );
     }
 
     const sellerData = sellerSnap.data();
-    const currentRows = Array.isArray(sellerData.rows) ? [...sellerData.rows] : [];
+    const currentRows = Array.isArray(sellerData.rows)
+      ? [...sellerData.rows]
+      : [];
 
-    const updatedRows = currentRows.map((row) => {
-      const updatesForRow = updates.filter((u) => u.rowId === row.rowId);
-      const updated = { ...row };
-      updatesForRow.forEach(({ col, value }) => {
-        updated[col] = value;
-      });
-      return updated;
+    // Track failures
+    const failed: Update[] = [];
+
+    // Apply updates in-memory
+    updates.forEach((u) => {
+      const idx = currentRows.findIndex((r) => r.rowId === u.rowId);
+      if (idx === -1) {
+        console.warn(`[batch-update] rowId "${u.rowId}" not found`);
+        failed.push(u);
+      } else {
+        console.log(
+          `[batch-update] Applying update to row "${u.rowId}" → ${u.col} = ${JSON.stringify(
+            u.value
+          )}`
+        );
+        currentRows[idx] = {
+          ...currentRows[idx],
+          [u.col]: u.value,
+        };
+      }
     });
 
-    await updateDoc(sellerDocRef, { rows: updatedRows });
+    // Write back once
+    await updateDoc(sellerDocRef, { rows: currentRows });
+    console.log('[batch-update] Database write successful');
 
     return NextResponse.json({
       success: true,
-      updatedCount: updates.length,
+      failed,
     });
   } catch (error) {
-    console.error('Batch update error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('[batch-update] Internal error:', error);
+    // on total failure, push back all for retry
+    const body: BatchUpdateRequest = await req.json();
+    return NextResponse.json(
+      { success: false, failed: body.data.updates },
+      { status: 500 }
+    );
   }
 }
