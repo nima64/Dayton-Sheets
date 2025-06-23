@@ -9,6 +9,8 @@ import {
   Unsubscribe
 } from 'firebase/firestore';
 import { db } from '../firebase/firebase-client';
+import BuyerSpreadSheet from '@/components/custom-spreadsheet/buyer-spreadsheet';
+import { GenericRow } from '@/components/custom-spreadsheet/spreadsheet.types';
 
 export function BuyerSheetView() {
   const params = useSearchParams();
@@ -16,7 +18,7 @@ export function BuyerSheetView() {
   const [buyerId, setBuyerId] = useState<string>();
   const [buyerRows, setBuyerRows] = useState<any[]>([]);
   const [sellerIds, setSellerIds] = useState<string[]>([]);
-  const [sellerMap, setSellerMap] = useState<Record<string,string>>({});
+  const [sellerMap, setSellerMap] = useState<Record<string, string>>({});
   const [sellerCopies, setSellerCopies] = useState<Record<string, any[]>>({});
   const [mergedRows, setMergedRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,17 +32,17 @@ export function BuyerSheetView() {
       const data = snap.data();
       setBuyerId(data.buyerId);
       const ids = data.sellerIds || [];
-            setSellerIds(ids);
-      
-            // Fetch seller emails once:
-            (async () => {
-              const map: Record<string,string> = {};
-              await Promise.all(ids.map(async (id: string) => {
-                const userSnap = await getDoc(doc(db,'users',id));
-                map[id] = userSnap.exists() ? (userSnap.data()?.email as string) : id;
-              }));
-              setSellerMap(map);
-          })();
+      setSellerIds(ids);
+
+      // Fetch seller emails once:
+      (async () => {
+        const map: Record<string, string> = {};
+        await Promise.all(ids.map(async (id: string) => {
+          const userSnap = await getDoc(doc(db, 'users', id));
+          map[id] = userSnap.exists() ? (userSnap.data()?.email as string) : id;
+        }));
+        setSellerMap(map);
+      })();
     });
     return () => unsubMeta();
   }, [templateId]);
@@ -78,25 +80,44 @@ export function BuyerSheetView() {
     if (!buyerRows.length) return;
     const offers: any[] = [];
     buyerRows.forEach((bRow: any) => {
+      let addEmpty = true;
       sellerIds.forEach(sellerId => {
         const sRows = sellerCopies[sellerId] || [];
         const match = sRows.find(r => r.rowId === bRow.rowId) || {};
-        offers.push({
-          rowId: bRow.rowId,
-          make: bRow.make,
-          model: bRow.model,
-          config: bRow.config,
-          price1: match.price1,
-          qty1: match.qty1,
-          price2: match.price2,
-          qty2: match.qty2,
-          price3: match.price3,
-          qty3: match.qty3,
-          substitution: match.substitution,
-          notes: match.notes,
-          sellerId
-        });
+        const hasData = Boolean(
+          match.price1 ||
+          match.qty1 ||
+          match.price2 ||
+          match.qty2 ||
+          match.price3 ||
+          match.qty3 ||
+          match.substitution ||
+          match.notes
+        );
+        if (hasData){
+          addEmpty = false;
+          offers.push({
+            rowId: bRow.rowId,
+            make: bRow.make,
+            model: bRow.model,
+            config: bRow.config,
+            price1: match.price1,
+            qty1: match.qty1,
+            price2: match.price2,
+            qty2: match.qty2,
+            price3: match.price3,
+            qty3: match.qty3,
+            substitution: match.substitution,
+            notes: match.notes,
+            sellerId: sellerMap[sellerId]
+          });
+        }
       });
+      if(addEmpty)
+        offers.push({
+            rowId: bRow.rowId,
+          })
+        
     });
     setMergedRows(offers);
   }, [buyerRows, sellerCopies, sellerIds]);
@@ -104,6 +125,9 @@ export function BuyerSheetView() {
   if (loading) return <div className="p-6">Loading sheet offers…</div>;
   if (!templateId) return <div className="p-6">Missing template ID.</div>;
 
+  return (<BuyerSpreadSheet
+    data={mergedRows}
+  />)
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">
@@ -132,7 +156,7 @@ export function BuyerSheetView() {
         <tbody>
           {mergedRows.map((row, idx) => (
             <tr key={idx} className="hover:bg-gray-50">
-              <td className="border p-1">{row.rowId.replace('r','')}</td>
+              <td className="border p-1">{row.rowId.replace('r', '')}</td>
               <td className="border p-1">{row.make}</td>
               <td className="border p-1">{row.model}</td>
               <td className="border p-1">{row.config}</td>
