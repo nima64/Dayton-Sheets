@@ -20,9 +20,12 @@ export const defaultColumn: Partial<ColumnDef<GenericRow>> = {
                 // "w-full px-2 py-1 font-medium text-left border-0 bg-transparent focus:bg-white focus:border focus:border-blue-300 focus:outline-none "
                 value={value as string}
                 onChange={e => {
+                    if(column.columnDef.meta?.readOnly)
+                        return
+
                     setValue(e.target.value);
                     // console.log(initialData[index][id]);
-                    // table.options.meta?.onChange && table.options.meta?.onChange(e, rowIdx, colIdx);
+                    table.options.meta?.onChange && table.options.meta?.onChange(e, rowIdx, colIdx);
                     // table.options.meta?.updateData(index, id, e.target.value);
 
                 }}
@@ -30,7 +33,7 @@ export const defaultColumn: Partial<ColumnDef<GenericRow>> = {
                     (e) => {
                         console.log('triggered on blur');
                         // if(!column.columnDef.meta?.readOnly)
-                        // table.options.meta?.updateData(index, id, e.target.value);
+                        table.options.meta?.updateData(rowIdx, colIdx, e.target.value);
                     }
                 }
                 onKeyUp={table.options.meta?.onKeyUp}

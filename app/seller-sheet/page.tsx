@@ -6,7 +6,7 @@ import { Suspense, useEffect, useState, useRef, useCallback } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 
-import CustomSpreadSheet from "@/components/custom-spreadsheet";
+import CustomSpreadSheet from "@/components/custom-spreadsheet/custom-spreadsheet";
 import { auth } from "../firebase/auth-service";
 import { db } from "../firebase/firebase-client";
 
@@ -133,6 +133,7 @@ function SellerSheetPage() {
         role="seller"
         onChange={(e, rowIndex, colId) => {
           const value = (e.target as HTMLInputElement).value;
+          console.log('key value', value);
           const rowId = rowIds[rowIndex];
           if (!rowId || !colId) return;
           enqueue({ rowId, col: colId, value });

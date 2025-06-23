@@ -90,7 +90,7 @@ export default function CustomSpreadSheet({ data, onKeyUp, onChange, role }: Spr
             },
             onKeyUp,
             onKeyDown: handleKeyDown,
-            onChange
+            onChange: onChange
         },
     });
 
