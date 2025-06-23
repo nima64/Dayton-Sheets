@@ -30,14 +30,23 @@ export type GenericRow = {
     notes: string;
 };
 
-type SpreadSheetProps = {
-    data: GenericRow[];
+export type BuyerDisplayRow = GenericRow & {
+  sellerId: string;
+};
+
+type GenericSpreadSheetProps = {
     onKeyUp?: (e: React.KeyboardEvent) => void;
     onKeyDown?: (e: React.KeyboardEvent, row:number, colId:string) => void;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>, row: number, colId: string) => void;
     role?: 'buyer' | 'seller';
     columnIds?: string[];
-};
+}
+
+type SpreadSheetProps = GenericSpreadSheetProps & {
+    data: GenericRow[];};
+  
+type BuyerDisplaySpreadSheetProps = GenericSpreadSheetProps & {
+    data: BuyerDisplayRow[];};
 
 export interface BaseTableMeta<TData extends RowData> {
   updateData: (rowIndex: number, columnId: string, value: unknown) => void;
@@ -52,4 +61,4 @@ export interface SpreadsheetMeta<TData extends RowData> extends BaseTableMeta<TD
 
 
 
-export type { Printer, SpreadSheetProps, userRole};
+export type { Printer, SpreadSheetProps, BuyerDisplaySpreadSheetProps, userRole};
