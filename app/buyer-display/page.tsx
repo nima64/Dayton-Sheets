@@ -12,7 +12,7 @@ import { db } from '../firebase/firebase-client';
 import BuyerSpreadSheet from '@/components/custom-spreadsheet/buyer-spreadsheet';
 import { GenericRow } from '@/components/custom-spreadsheet/spreadsheet.types';
 
-export function BuyerSheetView() {
+function BuyerSheetView() {
   const params = useSearchParams();
   const templateId = params.get('templateId')!;
   const [buyerId, setBuyerId] = useState<string>();
@@ -128,55 +128,56 @@ export function BuyerSheetView() {
   return (<BuyerSpreadSheet
     data={mergedRows}
   />)
-  return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">
-        Offers for Template {templateId}
-      </h1>
 
-      <table className="w-full text-sm border">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2 border">Row</th>
-            <th className="p-2 border">Make</th>
-            <th className="p-2 border">Model</th>
-            <th className="p-2 border">Config</th>
-            <th className="p-2 border">Seller</th>
-            <th className="p-2 border">Price1</th>
-            <th className="p-2 border">Qty1</th>
-            <th className="p-2 border">Price2</th>
-            <th className="p-2 border">Qty2</th>
-            <th className="p-2 border">Price3</th>
-            <th className="p-2 border">Qty3</th>
-            <th className="p-2 border">Substitution</th>
-            <th className="p-2 border">Notes</th>
-          </tr>
-        </thead>
+  // return (
+  //   <div className="p-6 max-w-7xl mx-auto">
+  //     <h1 className="text-2xl font-bold mb-4">
+  //       Offers for Template {templateId}
+  //     </h1>
 
-        <tbody>
-          {mergedRows.map((row, idx) => (
-            <tr key={idx} className="hover:bg-gray-50">
-              <td className="border p-1">{row.rowId.replace('r', '')}</td>
-              <td className="border p-1">{row.make}</td>
-              <td className="border p-1">{row.model}</td>
-              <td className="border p-1">{row.config}</td>
-              <td className="border p-1 text-xs">
-                {sellerMap[row.sellerId] || row.sellerId}
-              </td>
-              <td className="border p-1">{row.price1}</td>
-              <td className="border p-1">{row.qty1}</td>
-              <td className="border p-1">{row.price2}</td>
-              <td className="border p-1">{row.qty2}</td>
-              <td className="border p-1">{row.price3}</td>
-              <td className="border p-1">{row.qty3}</td>
-              <td className="border p-1">{row.substitution}</td>
-              <td className="border p-1">{row.notes}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+  //     <table className="w-full text-sm border">
+  //       <thead className="bg-gray-100">
+  //         <tr>
+  //           <th className="p-2 border">Row</th>
+  //           <th className="p-2 border">Make</th>
+  //           <th className="p-2 border">Model</th>
+  //           <th className="p-2 border">Config</th>
+  //           <th className="p-2 border">Seller</th>
+  //           <th className="p-2 border">Price1</th>
+  //           <th className="p-2 border">Qty1</th>
+  //           <th className="p-2 border">Price2</th>
+  //           <th className="p-2 border">Qty2</th>
+  //           <th className="p-2 border">Price3</th>
+  //           <th className="p-2 border">Qty3</th>
+  //           <th className="p-2 border">Substitution</th>
+  //           <th className="p-2 border">Notes</th>
+  //         </tr>
+  //       </thead>
+
+  //       <tbody>
+  //         {mergedRows.map((row, idx) => (
+  //           <tr key={idx} className="hover:bg-gray-50">
+  //             <td className="border p-1">{row.rowId.replace('r', '')}</td>
+  //             <td className="border p-1">{row.make}</td>
+  //             <td className="border p-1">{row.model}</td>
+  //             <td className="border p-1">{row.config}</td>
+  //             <td className="border p-1 text-xs">
+  //               {sellerMap[row.sellerId] || row.sellerId}
+  //             </td>
+  //             <td className="border p-1">{row.price1}</td>
+  //             <td className="border p-1">{row.qty1}</td>
+  //             <td className="border p-1">{row.price2}</td>
+  //             <td className="border p-1">{row.qty2}</td>
+  //             <td className="border p-1">{row.price3}</td>
+  //             <td className="border p-1">{row.qty3}</td>
+  //             <td className="border p-1">{row.substitution}</td>
+  //             <td className="border p-1">{row.notes}</td>
+  //           </tr>
+  //         ))}
+  //       </tbody>
+  //     </table>
+  //   </div>
+  // );
 }
 
 export default function Page() {
