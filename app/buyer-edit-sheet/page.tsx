@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 import { auth } from "../firebase/auth-service";
 import { db } from "../firebase/firebase-client";
-import CustomSpreadSheet from "@/components/custom-spreadsheet";
+import CustomSpreadSheet from "@/components/custom-spreadsheet/custom-spreadsheet";
 
 function BuyerEditSheetPage() {
   const [userId, setUserId] = useState<string | null>(null);

@@ -6,7 +6,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "../firebase/firebase-client";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import { v4 as uuidv4 } from 'uuid';
-import CustomSpreadSheet from '@/components/custom-spreadsheet';
+import CustomSpreadSheet from '@/components/custom-spreadsheet/custom-spreadsheet';
 
 export default function CreateSheet() {
   const router = useRouter();
