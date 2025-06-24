@@ -40,19 +40,19 @@ const columns = [
     header: "Config",
   }),
   columnHelper.accessor("price1", {
-    header: "Price 1",
+    header: "Price Quote 9/10 no retail box",
   }),
   columnHelper.accessor("qty1", {
     header: "Qty 1",
   }),
   columnHelper.accessor("price2", {
-    header: "Price 2",
+    header: "Price Quote 10/10 no retail box",
   }),
   columnHelper.accessor("qty2", {
     header: "Qty 2",
   }),
   columnHelper.accessor("price3", {
-    header: "Price 3",
+    header: "Price Quote 9/10-10/10 with retail box",
   }),
   columnHelper.accessor("qty3", {
     header: "Qty 3",
