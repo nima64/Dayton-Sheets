@@ -23,19 +23,19 @@ function BuyerSheetView() {
   const [mergedRows, setMergedRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 1) Listen to metadata → get buyerId & sellerIds
   useEffect(() => {
+
     if (!templateId) return;
     const metaRef = doc(db, 'sheets-metadata', templateId);
     const unsubMeta = onSnapshot(metaRef, snap => {
       if (!snap.exists()) return;
-      const data = snap.data();
-      setBuyerId(data.buyerId);
-      const ids = data.sellerIds || [];
-      setSellerIds(ids);
 
       // Fetch seller emails once:
       (async () => {
+        const data = snap.data();
+        setBuyerId(data.buyerId);
+        const ids = data.sellerIds || [];
+        setSellerIds(ids);
         const map: Record<string, string> = {};
         await Promise.all(ids.map(async (id: string) => {
           const userSnap = await getDoc(doc(db, 'users', id));
@@ -43,9 +43,10 @@ function BuyerSheetView() {
         }));
         setSellerMap(map);
       })();
+
     });
     return () => unsubMeta();
-  }, [templateId]);
+  }, [sellerMap]);
 
   // 2) Listen to buyer template rows
   useEffect(() => {
@@ -94,7 +95,7 @@ function BuyerSheetView() {
           match.substitution ||
           match.notes
         );
-        if (hasData){
+        if (hasData) {
           addEmpty = false;
           offers.push({
             rowId: bRow.rowId,
@@ -113,11 +114,11 @@ function BuyerSheetView() {
           });
         }
       });
-      if(addEmpty)
+      if (addEmpty)
         offers.push({
-            rowId: bRow.rowId,
-          })
-        
+          rowId: bRow.rowId,
+        })
+
     });
     setMergedRows(offers);
   }, [buyerRows, sellerCopies, sellerIds]);
