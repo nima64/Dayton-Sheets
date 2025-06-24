@@ -19,8 +19,16 @@ import { useSpreadsheetNavigation } from "../custom-spreadsheet/use-spreadsheet-
 
 
 
+// meta options
 declare module '@tanstack/react-table' {
-    interface TableMeta<TData extends RowData> extends SpreadsheetMeta<TData> { }
+    interface TableMeta<TData extends RowData> extends SpreadsheetMeta<TData> { 
+    }
+        // THIS IS THE MISSING PART - ColumnMeta interface extension
+    interface ColumnMeta<TData, TValue> {
+        readOnly?: boolean;
+        // Add any other column-specific properties you need
+    }
+
 }
 
 
@@ -71,11 +79,12 @@ export default function CustomSpreadSheet({ data, onKeyUp, onChange, role }: Spr
         // autoResetExpanded: false,
         // columnResizeMode: 'onChange',
         meta: {
+            // readOnly: false,
             updateData: (rowIndex: number, columnId: string, value: unknown) => {
                 // Performance Optimization
                 // Pushes to next event loop tick
                 setTimeout(() => {
-                    console.log('update was triggered');
+                    // console.log('update was triggered');
                     setLocalData(old =>
                         old.map((row, index) => {
                             if (index === rowIndex) {
@@ -90,7 +99,7 @@ export default function CustomSpreadSheet({ data, onKeyUp, onChange, role }: Spr
             },
             onKeyUp,
             onKeyDown: handleKeyDown,
-            onChange: onChange
+            onChange: onChange,
         },
     });
 
