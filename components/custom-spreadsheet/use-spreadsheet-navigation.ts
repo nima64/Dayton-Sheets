@@ -1,10 +1,10 @@
 import { GenericRow } from './spreadsheet.types';
 
+/* Enable keyboard navigation on Spread sheet */
 export const useSpreadsheetNavigation = (
   localData: GenericRow[],
   tableRef: React.RefObject<HTMLDivElement | null>
-) => {
-  const handleKeyDown = (
+) =>  (
     e: React.KeyboardEvent,
     rowIndex: number,
     colID: string
@@ -26,5 +26,4 @@ export const useSpreadsheetNavigation = (
     }
   }
 
-  return { handleKeyDown };
-};
+

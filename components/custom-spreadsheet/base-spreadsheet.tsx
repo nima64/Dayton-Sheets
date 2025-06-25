@@ -1,29 +1,24 @@
 import * as React from "react";
 import {
-    ColumnDef,
     flexRender,
     getCoreRowModel,
     useReactTable,
-    getGroupedRowModel,
     RowData,
     getExpandedRowModel,
-    GroupingState,
-    ExpandedState,
-    Table
+    Table,
+    getSortedRowModel,
+    SortingFn
 } from "@tanstack/react-table";
 import { GenericRow, SpreadsheetMeta, SpreadSheetProps } from "./spreadsheet.types";
-import { useRef, useState } from "react";
-import { getColumnsFromRole } from "./columns";
-import { defaultColumn } from "./cell";
+import { useRef } from "react";
+import { getColumnsFromRole, defaultColumn, TableHeaderWithSortBtn } from "./columns";
 import { useSpreadsheetNavigation } from "../custom-spreadsheet/use-spreadsheet-navigation";
-
-
 
 // meta options
 declare module '@tanstack/react-table' {
-    interface TableMeta<TData extends RowData> extends SpreadsheetMeta<TData> { 
+    interface TableMeta<TData extends RowData> extends SpreadsheetMeta<TData> {
     }
-        // THIS IS THE MISSING PART - ColumnMeta interface extension
+    // THIS IS THE MISSING PART - ColumnMeta interface extension
     interface ColumnMeta<TData, TValue> {
         readOnly?: boolean;
         // Add any other column-specific properties you need
@@ -31,55 +26,20 @@ declare module '@tanstack/react-table' {
 
 }
 
-
-const ColumnLabels = <TData extends RowData>({table}:{table: Table<TData>}) => (
-    table.getHeaderGroups().map(headerGroup => (
-        <tr className="bg-gray-100 border-b" key={headerGroup.id}>
-            {headerGroup.headers.map(header => (
-                <th
-                    key={header.id}
-                    className="border-r border-gray-300 last:border-r-0 p-1 text-left font-semibold text-gray-700 text-sm"
-                    style={{
-                        width: header.getSize(),
-                        minWidth: header.column.columnDef.minSize,
-                        maxWidth: header.column.columnDef.maxSize,
-                    }}
-                >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                </th>
-            ))}
-        </tr>
-    ))
-
-);
-
-export default function CustomSpreadSheet({ data, onKeyUp, onChange, role }: SpreadSheetProps) {
+export default function CustomSpreadSheet({ data, onKeyUp,onBlur, onChange, role }: SpreadSheetProps) {
     const [localData, setLocalData] = React.useState<GenericRow[]>(data);
-    const [grouping, setGrouping] = React.useState<GroupingState>(['rowId']);
-    const [expanded, setExpanded] = React.useState<ExpandedState>({});
     const tableRef = useRef<HTMLDivElement>(null);
-    const { handleKeyDown } = useSpreadsheetNavigation(localData, tableRef);
 
 
     const table = useReactTable({
         data: localData,
         columns: getColumnsFromRole(role),
-        state: {
-            // grouping,
-            // expanded,
-
-        },
+        state: {},
         defaultColumn,
         getCoreRowModel: getCoreRowModel(),
-        // onGroupingChange: setGrouping,
-        // onExpandedChange: setExpanded,
-        // getGroupedRowModel: getGroupedRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
-        // Remove the problematic initialState
-        // autoResetExpanded: false,
-        // columnResizeMode: 'onChange',
+        getSortedRowModel: getSortedRowModel(), //provide a sorting row model
         meta: {
-            // readOnly: false,
             updateData: (rowIndex: number, columnId: string, value: unknown) => {
                 // Performance Optimization
                 // Pushes to next event loop tick
@@ -94,12 +54,12 @@ export default function CustomSpreadSheet({ data, onKeyUp, onChange, role }: Spr
                         })
                     );
                 }, 0);
-
-
             },
             onKeyUp,
-            onKeyDown: handleKeyDown,
+            onKeyDown: useSpreadsheetNavigation(localData, tableRef),
+            onBlur,
             onChange: onChange,
+
         },
     });
 
@@ -108,7 +68,25 @@ export default function CustomSpreadSheet({ data, onKeyUp, onChange, role }: Spr
             <div ref={tableRef} className="h-9/12 overflow-auto overflow-x-scroll border border-gray-300 rounded-sm">
                 <table className="min-w-full bg-white text-sm" style={{ width: table.getCenterTotalSize() }}>
                     <thead>
-                        <ColumnLabels table={table}/>
+                        {
+                            table.getHeaderGroups().map(headerGroup => (
+                                <tr className="bg-gray-100 border-b" key={headerGroup.id}>
+                                    {headerGroup.headers.map(header => (
+                                        <th
+                                            key={header.id}
+                                            className="border-r border-gray-300 last:border-r-0 p-1 text-left font-semibold text-gray-700 text-sm"
+                                            style={{
+                                                width: header.getSize(),
+                                                minWidth: header.column.columnDef.minSize,
+                                                maxWidth: header.column.columnDef.maxSize,
+                                            }}
+                                        >
+                                            {TableHeaderWithSortBtn(header)}
+                                        </th>
+                                    ))}
+                                </tr>
+                            ))
+                        }
                     </thead>
 
                     <tbody className="divide-y divide-gray-200">
@@ -130,7 +108,7 @@ export default function CustomSpreadSheet({ data, onKeyUp, onChange, role }: Spr
                             </tr>
                         ))}
                     </tbody>
-                    
+
                 </table>
             </div>
         </div>

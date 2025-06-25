@@ -1,19 +1,6 @@
-import { ColumnDef, createColumnHelper, RowData } from "@tanstack/react-table";
-import { useState } from "react";
+import { RowData } from "@tanstack/react-table";
 
 type userRole = 'buyer' | 'seller';
-
-
-type Printer = {
-    rowId: string;
-    make: string;
-    model: string;
-    config: string;
-    qty: string; // Optional field for quantity
-    price: string; // Optional field for quantity
-    seller: string; // Optional field for quantity
-    [key: string]: any; // <-- Add this line
-};
 
 export type GenericRow = {
     rowId: string;
@@ -38,8 +25,15 @@ type GenericSpreadSheetProps = {
     onKeyUp?: (e: React.KeyboardEvent) => void;
     onKeyDown?: (e: React.KeyboardEvent, row:number, colId:string) => void;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>, row: number, colId: string) => void;
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>, row: number, colId: string) => void;
     role?: 'buyer' | 'seller';
     columnIds?: string[];
+}
+export interface SpreadsheetMeta<TData extends RowData> extends BaseTableMeta<TData> {
+  onKeyUp?: (e: React.KeyboardEvent) => void;
+  onKeyDown?: (e: React.KeyboardEvent, row: number, colId: string) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>, row: number, colId: string) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>, row: number, colId: string) => void;
 }
 
 type SpreadSheetProps = GenericSpreadSheetProps & {
@@ -52,13 +46,8 @@ export interface BaseTableMeta<TData extends RowData> {
   updateData: (rowIndex: number, columnId: string, value: unknown) => void;
 }
 
-export interface SpreadsheetMeta<TData extends RowData> extends BaseTableMeta<TData> {
-  onKeyUp?: (e: React.KeyboardEvent) => void;
-  onKeyDown?: (e: React.KeyboardEvent, row: number, colId: string) => void;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>, row: number, colId: string) => void;
-}
 
 
 
 
-export type { Printer, SpreadSheetProps, BuyerDisplaySpreadSheetProps, userRole};
+export type { SpreadSheetProps, BuyerDisplaySpreadSheetProps, userRole};

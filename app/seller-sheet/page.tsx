@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 
-import CustomSpreadSheet from "@/components/custom-spreadsheet/custom-spreadsheet";
+import CustomSpreadSheet from "@/components/custom-spreadsheet/base-spreadsheet";
 import { auth } from "../firebase/auth-service";
 import { db } from "../firebase/firebase-client";
 

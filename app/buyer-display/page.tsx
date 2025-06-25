@@ -9,8 +9,7 @@ import {
   Unsubscribe
 } from 'firebase/firestore';
 import { db } from '../firebase/firebase-client';
-import BuyerSpreadSheet from '@/components/custom-spreadsheet/buyer-spreadsheet';
-import { GenericRow } from '@/components/custom-spreadsheet/spreadsheet.types';
+import BuyerSpreadSheet from '@/components/custom-spreadsheet/buyer-display-spreadsheet';
 
 function BuyerSheetView() {
   const params = useSearchParams();
@@ -23,6 +22,8 @@ function BuyerSheetView() {
   const [mergedRows, setMergedRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  /* Alternatively we could possiblity chain snapshots, then put them inside one another so they'll be
+   called consecutively instead of a chain of useffects to reduce rendering */
   useEffect(() => {
     if (!templateId) return;
     const metaRef = doc(db, 'sheets-metadata', templateId);
