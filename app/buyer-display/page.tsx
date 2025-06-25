@@ -24,7 +24,6 @@ function BuyerSheetView() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     if (!templateId) return;
     const metaRef = doc(db, 'sheets-metadata', templateId);
     const unsubMeta = onSnapshot(metaRef, snap => {
@@ -46,7 +45,7 @@ function BuyerSheetView() {
 
     });
     return () => unsubMeta();
-  }, [sellerMap]);
+  }, []);
 
   // 2) Listen to buyer template rows
   useEffect(() => {
@@ -57,7 +56,7 @@ function BuyerSheetView() {
       setLoading(false);
     });
     return () => unsubTpl();
-  }, [templateId, buyerId]);
+  }, [sellerMap, templateId, buyerId]);
 
   // 3) For each sellerId, listen to its copy
   useEffect(() => {
