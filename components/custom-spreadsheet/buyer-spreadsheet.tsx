@@ -30,32 +30,32 @@ const columns = [
   columnHelper.accessor("make", {
     header: "Make",
   }),
-  columnHelper.accessor("sellerId", {
-    header: "Seller Id",
-  }),
   columnHelper.accessor("model", {
     header: "Model",
   }),
   columnHelper.accessor("config", {
-    header: "Config",
+    header: "Configuration",
+  }),
+  columnHelper.accessor("sellerId", {
+    header: "Seller Id",
   }),
   columnHelper.accessor("price1", {
     header: "Price Quote 9/10 no retail box",
   }),
   columnHelper.accessor("qty1", {
-    header: "Qty 1",
+    header: "Qty",
   }),
   columnHelper.accessor("price2", {
     header: "Price Quote 10/10 no retail box",
   }),
   columnHelper.accessor("qty2", {
-    header: "Qty 2",
+    header: "Qty",
   }),
   columnHelper.accessor("price3", {
     header: "Price Quote 9/10-10/10 with retail box",
   }),
   columnHelper.accessor("qty3", {
-    header: "Qty 3",
+    header: "Qty",
   }),
   columnHelper.accessor("substitution", {
     header: "Substitution",
