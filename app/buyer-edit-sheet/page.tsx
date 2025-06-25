@@ -8,12 +8,11 @@ import {
 } from "firebase/firestore";
 import { auth } from "../firebase/auth-service";
 import { db } from "../firebase/firebase-client";
-import CustomSpreadSheet from "@/components/custom-spreadsheet/custom-spreadsheet";
+import CustomSpreadSheet from "@/components/custom-spreadsheet/base-spreadsheet";
 
 function BuyerEditSheetPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [sheetData, setSheetData] = useState<any[]>([]);
-  const [rowIds, setRowIds] = useState<string[]>([]);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [selectedSellers, setSelectedSellers] = useState<string[]>([]);
@@ -35,7 +34,6 @@ function BuyerEditSheetPage() {
 
       const { rows = [], title = "", category = "" } = snap.data();
       setSheetData(rows);
-      setRowIds(rows.map((r: any) => r.rowId));
       setTitle(title);
       setCategory(category);
 
@@ -134,11 +132,14 @@ function BuyerEditSheetPage() {
           ]}
           role="buyer"
           onChange={(e, row, colId) => {
+          }}
+          onBlur={(e, row, colId) => {
             const value = e.currentTarget.value;
             const newData = [...sheetData];
             newData[row] = { ...newData[row], [colId!]: value };
             setSheetData(newData);
           }}
+
         />
       </div>
       <div className="w-1/4 space-y-4">
