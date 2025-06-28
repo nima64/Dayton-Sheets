@@ -6,8 +6,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import {
   doc, getDoc, updateDoc, collection, getDocs, setDoc
 } from "firebase/firestore";
-import { auth } from "../firebase/auth-service";
-import { db } from "../firebase/firebase-client";
+import { auth } from "@/firebase/auth-service";
+import { db } from "@/firebase/firebase-client";
 import CustomSpreadSheet from "@/components/custom-spreadsheet/base-spreadsheet";
 
 function BuyerEditSheetPage() {

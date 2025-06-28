@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { db } from "../firebase/firebase-client";
+import { db } from "@/firebase/firebase-client";
 import {
   collection,
   deleteDoc,

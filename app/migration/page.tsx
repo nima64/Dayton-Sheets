@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { db } from "../firebase/firebase-client";
+import { db } from "@/firebase/firebase-client";
 import { doc, setDoc } from "firebase/firestore";
 
 export default function MigrationPage() {

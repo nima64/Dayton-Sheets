@@ -1,5 +1,5 @@
 // app/api/sheet/batch-update/route.ts
-import { db } from '@/app/firebase/firebase-client'
+import { db } from '@/firebase/firebase-client'
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import { NextRequest, NextResponse } from 'next/server'
 

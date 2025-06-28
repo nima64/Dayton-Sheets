@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, query, where, collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase/firebase-client";
+import { db } from "@/firebase/firebase-client";
 
 export default function LoginPage() {
   const auth = getAuth();

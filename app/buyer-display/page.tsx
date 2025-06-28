@@ -8,7 +8,7 @@ import {
   onSnapshot,
   Unsubscribe
 } from 'firebase/firestore';
-import { db } from '../firebase/firebase-client';
+import { db } from '@/firebase/firebase-client';
 import BuyerSpreadSheet from '@/components/custom-spreadsheet/buyer-display-spreadsheet';
 
 function BuyerSheetView() {

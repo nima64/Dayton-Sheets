@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { db } from "../firebase/firebase-client";
+import { db } from "@/firebase/firebase-client";
 import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import { v4 as uuidv4 } from 'uuid';
 import CustomSpreadSheet from '@/components/custom-spreadsheet/base-spreadsheet';
