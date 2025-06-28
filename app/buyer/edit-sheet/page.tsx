@@ -170,7 +170,7 @@ function BuyerEditSheetPage() {
         <button onClick={handleSave} className="bg-blue-600 text-white px-4 py-2 rounded w-full">
           Save & Sync
         </button>
-        <button onClick={() => router.push('/buyer-dashboard')} className="bg-gray-500 text-white px-4 py-2 rounded w-full">
+        <button onClick={() => router.push('/buyer/dashboard')} className="bg-gray-500 text-white px-4 py-2 rounded w-full">
           Back to Dashboard
         </button>
       </div>

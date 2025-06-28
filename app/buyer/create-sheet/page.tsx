@@ -132,7 +132,7 @@ export default function CreateSheet() {
     });
 
     console.log("✅ Sheet created and distributed.");
-    router.push("/buyer-dashboard");
+    router.push("/buyer/dashboard");
   };
 
   if (!isBuyer) {
@@ -198,7 +198,7 @@ export default function CreateSheet() {
           Create & Send
         </button>
         <button
-          onClick={() => router.push('/buyer-dashboard')}
+          onClick={() => router.push('/buyer/dashboard')}
           className="bg-gray-500 text-white px-4 py-2 rounded w-full"
         >
           Back to Dashboard

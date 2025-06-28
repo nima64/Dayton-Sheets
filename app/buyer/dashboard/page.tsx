@@ -127,7 +127,7 @@ export default function BuyerDashboard() {
         <h1 className="text-2xl font-bold">Your Created Sheets</h1>
         <div className="flex gap-2">
           <Link
-            href="/create-sheet"
+            href="/buyer/create-sheet"
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
           >
             + Create New Sheet
@@ -157,13 +157,13 @@ export default function BuyerDashboard() {
                 </p>
                 <div className="flex gap-4 mt-2">
                   <Link
-                    href={`/buyer-edit-sheet?templateId=${sheet.templateId}`}
+                    href={`/buyer/edit-sheet?templateId=${sheet.templateId}`}
                     className="text-blue-600 underline text-sm"
                   >
                     Edit Sheet
                   </Link>
                   <Link
-                    href={`/buyer-display?templateId=${sheet.templateId}`}
+                    href={`/buyer/display?templateId=${sheet.templateId}`}
                     className="text-green-600 underline text-sm"
                   >
                     View Offers

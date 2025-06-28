@@ -83,7 +83,7 @@ export default function LoginPage() {
           if (!password) return alert("Please enter your password");
           try {
             await signInWithEmailAndPassword(auth, email, password);
-            router.push("/buyer-dashboard");
+            router.push("/buyer/dashboard");
           } catch (err) {
             console.error(err);
             alert("Buyer login failed. Check your credentials.");
