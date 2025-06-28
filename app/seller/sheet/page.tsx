@@ -139,7 +139,7 @@ function SellerSheetPage() {
   return (
     <div className="flex flex-col items-center mt-8 min-h-screen space-y-4 px-4">
       <button
-        onClick={() => router.push("/seller-dashboard")}
+        onClick={() => router.push("/seller/dashboard")}
         className="self-start bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 px-4 rounded"
       >
         ← Back to Dashboard

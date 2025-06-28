@@ -49,7 +49,7 @@ export default function LoginPage() {
               // auto-sign in seller with default password
               try {
                 await signInWithEmailAndPassword(auth, email, "123456");
-                router.push("/seller-dashboard");
+                router.push("/seller/dashboard");
               } catch (err) {
                 console.error(err);
                 alert("Seller login failed. Please contact support.");

@@ -72,7 +72,7 @@ export default function SellerDashboard() {
               <h2 className="text-lg font-semibold">{sheet.title}</h2>
               <p className="text-sm text-gray-500">Category: {sheet.category}</p>
               <Link
-                href={`/seller-sheet?templateId=${sheet.templateId}`}
+                href={`/seller/sheet?templateId=${sheet.templateId}`}
                 className="text-blue-600 underline text-sm"
               >
                 Open Sheet
