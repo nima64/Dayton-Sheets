@@ -10,8 +10,8 @@ import { auth } from "@/firebase/auth-service";
 import { db } from "@/firebase/firebase-client";
 
 
-const queuedCells = new Map<string, any>();
-const processedCells = new Map<string, any>(); // Pending API updates
+const queuedCells = new Map<string, Record<string, unknown> >();
+const processedCells = new Map<string, Record<string, unknown> >(); // Pending API updates
 
 
 function startBatchUpdater(userId: string, templateId: string) {

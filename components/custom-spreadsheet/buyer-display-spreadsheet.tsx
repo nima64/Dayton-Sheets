@@ -14,7 +14,7 @@ import {
     createColumnHelper
 } from "@tanstack/react-table";
 import { BuyerDisplayRow, BuyerDisplaySpreadSheetProps, SpreadsheetMeta, SpreadSheetProps } from "./spreadsheet.types";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useSpreadsheetNavigation } from "./use-spreadsheet-navigation";
 import { TableHeaderWithSortBtn } from "./columns";
 

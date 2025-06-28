@@ -1,4 +1,4 @@
-import { ColumnDef, createColumnHelper, flexRender, Header, RowData, SortingFn, sortingFns } from "@tanstack/react-table";
+import { CellContext, ColumnDef, createColumnHelper, flexRender, Header, RowData, SortingFn, sortingFns } from "@tanstack/react-table";
 import { GenericRow, userRole } from "./spreadsheet.types";
 import { useState } from "react";
 
@@ -122,47 +122,41 @@ const TableHeaderWithSortBtn = <TData extends RowData>(header: Header<TData, unk
 );
 
 
-// Defines how each Cell component is created
+// cell moved into different function because its a react hook and has to follow Uppercase rule
+function EditableCell({ getValue, row: { index: rowIdx }, column, column: { id: colIdx }, table }: CellContext<GenericRow, unknown>) {
+  const initialValue = getValue() ?? '';
+  const [value, setValue] = useState(initialValue);
+  const readOnly = column.columnDef.meta?.readOnly;
+
+  return (
+    <input
+      data-row={rowIdx}
+      data-col={colIdx}
+      className={`
+        w-full px-1 py-0.5 text-sm text-left border-0 bg-transparent focus:outline-none ${
+          readOnly 
+            ? 'text-gray-400 cursor-not-allowed bg-gray-100' 
+            : 'focus:bg-white focus:border focus:border-blue-300'
+        }`}
+      value={value as string}
+      onChange={e => {
+        if (column.columnDef.meta?.readOnly) return;
+        setValue(e.target.value);
+        table.options.meta?.onChange?.(e, rowIdx, colIdx);
+      }}
+      onBlur={e => {
+        console.log('triggered on blur');
+        table.options.meta?.updateData(rowIdx, colIdx, e.target.value);
+        table.options.meta?.onBlur?.(e, rowIdx, colIdx);
+      }}
+      onKeyUp={table.options.meta?.onKeyUp}
+      onKeyDown={e => table.options.meta?.onKeyDown?.(e, rowIdx, colIdx)}
+    />
+  );
+}
+
 const defaultColumn: Partial<ColumnDef<GenericRow>> = {
-    cell: ({ getValue, row: { index: rowIdx }, column, column: { id: colIdx }, table }) => {
-        const initialValue = getValue() ?? '';
-        const [value, setValue] = useState(initialValue);
-        const readOnly = column.columnDef.meta?.readOnly;
-
-        return (
-            <input
-                data-row={rowIdx}
-                data-col={colIdx}
-                className={`
-                    
-                    w-full px-1 py-0.5 text-sm text-left border-0 bg-transparent focus:outline-none ${readOnly ? 'text-gray-400 cursor-not-allowed bg-gray-100' : 'focus:bg-white focus:border focus:border-blue-300'
-                    }`}
-
-                // "w-full px-2 py-1 font-medium text-left border-0 bg-transparent focus:bg-white focus:border focus:border-blue-300 focus:outline-none "
-                value={value as string}
-                onChange={e => {
-                    if (column.columnDef.meta?.readOnly)
-                        return
-
-                    setValue(e.target.value);
-                    // console.log(initialData[index][id]);
-                    table.options.meta?.onChange && table.options.meta?.onChange(e, rowIdx, colIdx);
-                    // table.options.meta?.updateData(index, id, e.target.value);
-
-                }}
-                onBlur={
-                    (e) => {
-                        console.log('triggered on blur');
-                        // if(!column.columnDef.meta?.readOnly)
-                        table.options.meta?.updateData(rowIdx, colIdx, e.target.value);
-                        table.options.meta?.onBlur && table.options.meta?.onBlur(e, rowIdx, colIdx);
-                    }
-                }
-                onKeyUp={table.options.meta?.onKeyUp}
-                onKeyDown={(e) => table.options.meta?.onKeyDown && table.options.meta?.onKeyDown(e, rowIdx, colIdx)}
-            />
-        );
-    },
+    cell: (props) => <EditableCell {...props}/>,
     sortingFn: sortExcludingEmpty
 };
 

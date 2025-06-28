@@ -65,7 +65,7 @@ export function LoginForm({
             <div className="flex flex-col gap-3">
               <Button onClick={async () => {
                 if (onSubmit) {
-                  let user = await onSubmit(email, password);
+                  const user = await onSubmit(email, password);
                   if (user)
                     router.push('/')
 

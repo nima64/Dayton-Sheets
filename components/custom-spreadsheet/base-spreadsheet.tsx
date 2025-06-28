@@ -5,9 +5,7 @@ import {
     useReactTable,
     RowData,
     getExpandedRowModel,
-    Table,
     getSortedRowModel,
-    SortingFn
 } from "@tanstack/react-table";
 import { GenericRow, SpreadsheetMeta, SpreadSheetProps } from "./spreadsheet.types";
 import { useRef } from "react";
