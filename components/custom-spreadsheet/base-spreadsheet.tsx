@@ -68,11 +68,11 @@ export default function CustomSpreadSheet({ data, onKeyUp,onBlur, onChange, role
                     <thead>
                         {
                             table.getHeaderGroups().map(headerGroup => (
-                                <tr className="bg-gray-100 border-b" key={headerGroup.id}>
+                                <tr className="bg-blue-500 border-b" key={headerGroup.id}>
                                     {headerGroup.headers.map(header => (
                                         <th
                                             key={header.id}
-                                            className="border-r border-gray-300 last:border-r-0 p-1 text-left font-semibold text-gray-700 text-sm"
+                                            className="border-r border-gray-300 last:border-r-0 p-1 text-left font-semibold text-white text-sm"
                                             style={{
                                                 width: header.getSize(),
                                                 minWidth: header.column.columnDef.minSize,

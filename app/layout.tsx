@@ -35,7 +35,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
         </ThemeProvider> */}
-          <h1 className="mb-4 mt-15 text-center text-4xl font-semibold leading-none tracking-tight text-gray-900 lg:text-3xl dark:text-white">RFQ Dayton Financial</h1>
+          <h1 className="mb-4 mt-15 text-center text-4xl font-normal leading-none tracking-tight text-gray-900 lg:text-3xl dark:text-white">Dayton Financial LLC</h1>
           {children}
       </body>
     </html>

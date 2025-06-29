@@ -16,15 +16,18 @@ import {
 import { BuyerDisplayRow, BuyerDisplaySpreadSheetProps, SpreadsheetMeta, SpreadSheetProps } from "./spreadsheet.types";
 import { useRef } from "react";
 import { useSpreadsheetNavigation } from "./use-spreadsheet-navigation";
-import { TableHeaderWithSortBtn } from "./columns";
+import { sortExcludingEmpty, TableHeaderWithSortBtn } from "./columns";
 
 
 const columnHelper = createColumnHelper<BuyerDisplayRow>(); // Replace YourDataType with your actual type
 
 const columns = [
     columnHelper.accessor("rowId", {
-        header: "Row ID",
+        header: "Row",
         cell: (info) => info.getValue()?.toString().slice(1) || '',
+        size: 30,
+        minSize: 30,
+        maxSize: 80,
     }),
     columnHelper.accessor("make", {
         header: "Make",
@@ -40,18 +43,21 @@ const columns = [
     }),
     columnHelper.accessor("price1", {
         header: "Price Quote 9/10 no retail box",
+        size: 180,
     }),
     columnHelper.accessor("qty1", {
         header: "Qty",
     }),
     columnHelper.accessor("price2", {
         header: "Price Quote 10/10 no retail box",
+        size: 180,
     }),
     columnHelper.accessor("qty2", {
         header: "Qty",
     }),
     columnHelper.accessor("price3", {
         header: "Price Quote 9/10-10/10 with retail box",
+        size: 180,
     }),
     columnHelper.accessor("qty3", {
         header: "Qty",
@@ -67,9 +73,10 @@ const columns = [
 
 // Default column configuration
 const defaultColumn = {
-    size: 120,
-    minSize: 50,
-    maxSize: 500,
+    size: 100,
+    minSize: 80,
+    maxSize: 300,
+    sortingFn: sortExcludingEmpty
 };
 
 
@@ -135,6 +142,11 @@ export default function BuyerSpreadSheet({ data, onKeyUp, onBlur, onChange, role
         const sortedRows = table.getSortedRowModel().rows;
         const sortedRow = sortedRows.find((sortedRow) => sortedRow.id == row.id);
         const firstRow = sortedRow != undefined ? sortedRow.subRows[0] : row.subRows[0];
+        console.log(sortedRow?.subRows[0]  == row.subRows[0]);
+        // if (sortedRow && row.subRows[0] === sortedRow.subRows[0])
+
+            // return;
+
         // show the first row of the grouped with the drop down icon
         if (row.getIsGrouped()) {
             return (
@@ -174,29 +186,29 @@ export default function BuyerSpreadSheet({ data, onKeyUp, onBlur, onChange, role
 
     return (
         <div className="p-2 w-full overflow-auto h-svh scroll-snap-y-container">
-            <div ref={tableRef} className="h-9/12 overflow-auto overflow-x-scroll border border-gray-300 rounded-sm">
+            <div ref={tableRef} className="h-9/12 overflow-auto overflow-x-scroll border border-gray-300 rounded-sm relative">
                 <table className="min-w-full bg-white text-sm" style={{ width: table.getCenterTotalSize() }}>
-                                       <thead>
-                    {
-                        table.getHeaderGroups().map(headerGroup => (
-                            <tr className="bg-gray-100 border-b" key={headerGroup.id}>
-                                {headerGroup.headers.map(header => (
-                                    <th
-                                        key={header.id}
-                                        className="border-r border-gray-300 last:border-r-0 p-1 text-left font-semibold text-gray-700 text-sm"
-                                        style={{
-                                            width: header.getSize(),
-                                            minWidth: header.column.columnDef.minSize,
-                                            maxWidth: header.column.columnDef.maxSize,
-                                        }}
-                                    >
-                                        {TableHeaderWithSortBtn(header)}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))
-                    }
-                </thead>
+                    <thead className="sticky top-0 z-10 bg-blue-500">
+                        {
+                            table.getHeaderGroups().map(headerGroup => (
+                                <tr className="border-b sticky" key={headerGroup.id}>
+                                    {headerGroup.headers.map(header => (
+                                        <th
+                                            key={header.id}
+                                            className="px-1.5 py-1 border-r border-gray-300 last:border-r-0 text-left font-semibold text-white text-sm"
+                                            style={{
+                                                width: header.getSize(),
+                                                minWidth: header.column.columnDef.minSize,
+                                                maxWidth: header.column.columnDef.maxSize,
+                                            }}
+                                        >
+                                            {TableHeaderWithSortBtn(header)}
+                                        </th>
+                                    ))}
+                                </tr>
+                            ))
+                        }
+                    </thead>
 
                     <tbody className="divide-y divide-gray-200">
                         {table.getRowModel().rows.map(row => (

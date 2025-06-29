@@ -124,7 +124,7 @@ export default function BuyerDashboard() {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Your Created Sheets</h1>
+        <h1 className="text-2xl font-normal">created sheets</h1>
         <div className="flex gap-2">
           <Link
             href="/buyer/create-sheet"

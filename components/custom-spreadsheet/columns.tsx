@@ -23,9 +23,9 @@ const columnHelper = createColumnHelper<GenericRow>();
 
 const getColumnsFromRole = (role: userRole = 'buyer') => [
     columnHelper.accessor("rowId", {
-        header: "Row ID",
-        size: 60,
-        minSize: 50,
+        header: "Row",
+        size: 30,
+        minSize: 30,
         maxSize: 80,
         cell: ({ getValue }) => {
             const raw = getValue() as string;
@@ -160,4 +160,4 @@ const defaultColumn: Partial<ColumnDef<GenericRow>> = {
     sortingFn: sortExcludingEmpty
 };
 
-export { getColumnsFromRole, defaultColumn, TableHeaderWithSortBtn };
+export { getColumnsFromRole, sortExcludingEmpty, defaultColumn, TableHeaderWithSortBtn };
