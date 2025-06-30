@@ -2,28 +2,39 @@
 
 The sheet schema
 ``` 
-sheetObject:{
-    buyerId: string
-    sheetData: [
-        {
-            rowId:string, 
-            make:string, 
-            model:string, 
-            config:string, 
-            price:string, 
-            qty:string, 
-        },
-    ]
+ Row = {
+  rowId:  number;
+  make:   string;
+  model:  string;
+  config: string;
+  qty:    number;
+};
+
+ MasterSheet {
+  templateId:  string;       // PK
+  buyerId:     string;       // FK → Buyer.userId
+  title:       string;
+  columns:     string[];
+  rows:        Row[];
+  sellers:     string[];     // UserIds
+  sellerCopies?: Record<string, Row[]>; // optional per-seller view
 }
 
-Sheet:
-    sellerId: string
-    buyerSheets:[
-        {
-            buyerid:string, sheetData:sheetObject 
-        }
-    ]
-    templateData:sheetObject
+ SellerCopy {
+  templateId: string;  // PK (composite)
+  sellerId:   string;  // PK
+  rows:       Row[];
+}
+
+Buyer {
+  userId:    string;   // PK
+  templates: string[]; // templateIds the buyer owns
+}
+
+Seller {
+  userId: string;      // PK
+  copies: string[];    // templateIds the seller can see
+}
 
 
 ```
