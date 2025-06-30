@@ -76,7 +76,7 @@ export default function SellerSignupForm({
 
         <p className="mt-6 text-sm text-gray-500">
           After creating, sellers can log in via the{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
+          <a href="/login" className="text-blue-600 hover:hover:underline">
             Login
           </a>{" "}
           page.

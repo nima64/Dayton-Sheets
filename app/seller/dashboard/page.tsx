@@ -58,7 +58,7 @@ export default function SellerDashboard() {
         <h1 className="text-2xl font-bold">Your Assigned Sheets</h1>
         <button
           onClick={handleSignOut}
-          className="text-sm text-red-600 underline"
+          className="text-sm text-red-600 hover:underline"
         >
           Sign Out
         </button>
@@ -73,7 +73,7 @@ export default function SellerDashboard() {
               <p className="text-sm text-gray-500">Category: {sheet.category}</p>
               <Link
                 href={`/seller/sheet?templateId=${sheet.templateId}`}
-                className="text-blue-600 underline text-sm"
+                className="text-blue-600 hover:underline text-sm"
               >
                 Open Sheet
               </Link>

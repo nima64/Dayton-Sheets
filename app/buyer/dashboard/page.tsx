@@ -12,6 +12,8 @@ import {
 } from "firebase/firestore";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type SheetMeta = {
   templateId: string;
@@ -124,20 +126,21 @@ export default function BuyerDashboard() {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-normal">created sheets</h1>
+        <h1 className="text-2xl font-normal">My Sheets</h1>
         <div className="flex gap-2">
           <Link
             href="/buyer/create-sheet"
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
           >
-            + Create New Sheet
+            Create New
           </Link>
-          <button
+          <Button
+            variant="secondary"
             onClick={handleSignOut}
-            className="text-sm text-red-600 underline"
+            className="text-sm hover:cursor-pointer"
           >
             Sign Out
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -158,13 +161,13 @@ export default function BuyerDashboard() {
                 <div className="flex gap-4 mt-2">
                   <Link
                     href={`/buyer/edit-sheet?templateId=${sheet.templateId}`}
-                    className="text-blue-600 underline text-sm"
+                    className="text-blue-600 hover:underline text-sm"
                   >
                     Edit Sheet
                   </Link>
                   <Link
                     href={`/buyer/display?templateId=${sheet.templateId}`}
-                    className="text-green-600 underline text-sm"
+                    className="text-green-600 hover:underline text-sm"
                   >
                     View Offers
                   </Link>
@@ -174,9 +177,9 @@ export default function BuyerDashboard() {
               {/* DELETE BUTTON */}
               <button
                 onClick={() => handleDelete(sheet.templateId)}
-                className="text-red-600 text-sm font-medium hover:underline"
+                className="cursor-pointer text-gray-600 hover:text-gray-400 text-sm font-medium"
               >
-                Delete
+              <Trash2 />
               </button>
             </li>
           ))}
