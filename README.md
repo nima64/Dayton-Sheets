@@ -1,7 +1,7 @@
 # Notes
 
 The sheet schema
-``` 
+``` javascript
  Row = {
   rowId:  number;
   make:   string;
