@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -10,46 +10,13 @@ import { auth } from "@/firebase/auth-service";
 import { db } from "@/firebase/firebase-client";
 
 
-const queuedCells = new Map<string, Record<string, unknown> >();
-const processedCells = new Map<string, Record<string, unknown> >(); // Pending API updates
+const queuedCells = new Map<string, Record<string, unknown>>();
+const processedCells = new Map<string, Record<string, unknown>>(); // Pending API updates
 
-
-function startBatchUpdater(userId: string, templateId: string) {
-  setInterval(() => {
-    if (queuedCells.size === 0) return;
-
-    // Move user changes to processed
-    queuedCells.forEach((update, key) => {
-      processedCells.set(key, update); // Latest value wins
-    });
-
-    queuedCells.clear();
-
-    const updates = Array.from(processedCells.values());
-
-    fetch(`/api/sheet/batch-update?user=${userId}&templateId=${templateId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ op: "batch_update", data: { updates } }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Update success:", data);
-        processedCells.clear();
-
-      })
-      .catch((err) => {
-        console.error("Update failed:", err);
-        //TODO: will it still work if a fetch fails?
-        // maybe dump processed cells back into que  
-        processedCells.forEach((update, key) => {
-          queuedCells.set(key, update); 
-        });
-      })
-      }, 3000);
-}
 
 function SellerSheetPage() {
+  const batchUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const [sheetRows, setSheetRows] = useState<any[]>([]);
   const [rowIds, setRowIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +26,47 @@ function SellerSheetPage() {
   const hasMounted = useHasMounted();
 
   const [templateId, setTemplateId] = useState<string | null>(null);
+
+  const startBatchUpdater =  useCallback((userId: string, templateId: string) => {
+
+      // Clear any existing interval first
+      if (batchUpdateIntervalRef.current) {
+        clearInterval(batchUpdateIntervalRef.current);
+      }
+    batchUpdateIntervalRef.current = setInterval(() => {
+
+      if (queuedCells.size === 0) return;
+
+      // Move user changes to processed
+      queuedCells.forEach((update, key) => {
+        processedCells.set(key, update); // Latest value wins
+      });
+
+      queuedCells.clear();
+
+      const updates = Array.from(processedCells.values());
+
+      fetch(`/api/sheet/batch-update?user=${userId}&templateId=${templateId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ op: "batch_update", data: { updates } }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Update success:", data);
+          processedCells.clear();
+
+        })
+        .catch((err) => {
+          console.error("Update failed:", err);
+          //TODO: will it still work if a fetch fails?
+          // maybe dump processed cells back into que  
+          processedCells.forEach((update, key) => {
+            queuedCells.set(key, update);
+          });
+        })
+    }, 3000);
+  }, []);
 
   useEffect(() => {
     if (params.get("templateId")) {
@@ -125,13 +133,20 @@ function SellerSheetPage() {
 
       setSheetRows(mergedRows);
       setRowIds(ids);
-
+      console.log("EMAIL: ", firebaseUser?.email);
       startBatchUpdater(firebaseUser.uid, templateId);
       setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, [hasMounted, templateId]);
+    // Cleanup function - runs when component unmounts or dependencies change
+    return () => {
+      unsubscribe();
+      if (batchUpdateIntervalRef.current) {
+        clearInterval(batchUpdateIntervalRef.current);
+      }
+
+    };
+  }, [hasMounted, templateId, startBatchUpdater]);
 
 
   if (loading) return <div className="p-4 text-center">Loading sheet...</div>;
