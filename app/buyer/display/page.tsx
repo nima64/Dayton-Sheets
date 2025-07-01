@@ -77,51 +77,67 @@ function BuyerSheetView() {
   }, [sellerIds, templateId]);
 
   // 4) Merge whenever buyerRows or any sellerCopies change
-  useEffect(() => {
-    if (!buyerRows.length) return;
-    const offers: any[] = [];
-    buyerRows.forEach((bRow: any) => {
-      let addEmpty = true;
-      sellerIds.forEach(sellerId => {
-        const sRows = sellerCopies[sellerId] || [];
-        const match = sRows.find(r => r.rowId === bRow.rowId) || {};
-        const hasData = Boolean(
-          match.price1 ||
-          match.qty1 ||
-          match.price2 ||
-          match.qty2 ||
-          match.price3 ||
-          match.qty3 ||
-          match.substitution ||
-          match.notes
-        );
-        if (hasData) {
-          addEmpty = false;
-          offers.push({
-            rowId: bRow.rowId,
-            make: bRow.make,
-            model: bRow.model,
-            config: bRow.config,
-            price1: match.price1,
-            qty1: match.qty1,
-            price2: match.price2,
-            qty2: match.qty2,
-            price3: match.price3,
-            qty3: match.qty3,
-            substitution: match.substitution,
-            notes: match.notes,
-            sellerId: sellerMap[sellerId]
-          });
-        }
-      });
-      if (addEmpty)
-        offers.push({
-          rowId: bRow.rowId,
-        })
+useEffect(() => {
+  if (!buyerRows.length) return;
 
+  const merged: any[] = [];
+
+  buyerRows.forEach((bRow: any) => {
+    // Extract the product info
+    const base = {
+      rowId:    bRow.rowId,
+      make:     bRow.make,
+      model:    bRow.model,
+      config:   bRow.config,
+      // initialize all seller columns blank:
+      price1:   "",
+      qty1:     "",
+      price2:   "",
+      qty2:     "",
+      price3:   "",
+      qty3:     "",
+      substitution: "",
+      notes:    "",
+      sellerId: ""   // can remain blank if no offers
+    };
+
+    // Collect any actual offers
+    let sawOffer = false;
+    sellerIds.forEach(sellerId => {
+      const sRows = sellerCopies[sellerId] || [];
+      const match = sRows.find(r => r.rowId === bRow.rowId) || {};
+      const hasData = Boolean(
+        match.price1    || match.qty1    ||
+        match.price2    || match.qty2    ||
+        match.price3    || match.qty3    ||
+        match.substitution || match.notes
+      );
+
+      if (hasData) {
+        sawOffer = true;
+        merged.push({
+          ...base,
+          price1: match.price1 ?? "",
+          qty1:   match.qty1   ?? "",
+          price2: match.price2 ?? "",
+          qty2:   match.qty2   ?? "",
+          price3: match.price3 ?? "",
+          qty3:   match.qty3   ?? "",
+          substitution: match.substitution ?? "",
+          notes:   match.notes   ?? "",
+          sellerId: sellerMap[sellerId] || sellerId
+        });
+      }
     });
-    setMergedRows(offers);
-  }, [buyerRows, sellerCopies, sellerIds]);
+
+    // If *no* sellers offered, push the base row so the product still appears
+    if (!sawOffer) {
+      merged.push(base);
+    }
+  });
+
+  setMergedRows(merged);
+}, [buyerRows, sellerCopies, sellerIds, sellerMap]);
 
   if (loading) return <div className="p-6">Loading sheet offers…</div>;
   if (!templateId) return <div className="p-6">Missing template ID.</div>;
