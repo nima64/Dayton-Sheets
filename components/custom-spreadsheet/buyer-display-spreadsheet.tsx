@@ -135,52 +135,53 @@ export default function BuyerSpreadSheet({ data, onKeyUp, onBlur, onChange, role
     });
 
     const RowToggleBtn = ({ cell, row }: { cell: any, row: Row<BuyerDisplayRow> }) => (
-        <button  className="pr-1 text-blue-400" onClick={row.getToggleExpandedHandler()}>
+        <button className="pr-1 text-blue-400" onClick={row.getToggleExpandedHandler()}>
             {row.getIsExpanded() ? '▼ ' : '▶ '}
         </button>
     );
 
     const CellAndDisplayFirstSubRow = (row: Row<BuyerDisplayRow>) => {
-        if (row.getIsGrouped()) {
-            const sortedRows = table.getSortedRowModel().rows;
-            const sortedRow = sortedRows.find((sortedRow) => sortedRow.id == row.id);
-            const firstRow = sortedRow != undefined ? sortedRow.subRows[0] : row.subRows[0];
+        const sharedClasses = "border-r border-gray-200 last:border-r-0 py-1 px-1";
+        const subRowClasses =sharedClasses +  " bg-blue-50";
 
+        const firstRowColumns = ["rowId", "make", "model", "config"];
+        if (row.getIsGrouped()) {
             return (
-                firstRow.getAllCells().map(cell =>
-                (<td
-                    key={cell.id}
-                    className="border-r border-gray-200 last:border-r-0 py-1 px-1"
-                >
-                    {(cell.column.id === "rowId" && row.subRows.length > 1) &&
-                        (<RowToggleBtn cell={cell} row={row} />)
-                    }
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>)
+                row.subRows[0].getAllCells().map(cell => {
+                    const isFirstRowColumn: boolean = firstRowColumns.includes(cell.column.id);
+
+                    return (<td
+                        key={cell.id}
+                        className={sharedClasses}
+                    >
+                        {(cell.column.id === "rowId" && row.subRows.length > 1) &&
+                            (<RowToggleBtn cell={cell} row={row} />)
+                        }
+                        {/* show columns if no children in group or show selected columns */}
+                        {row.subRows.length < 2 || isFirstRowColumn ? flexRender(cell.column.columnDef.cell, cell.getContext()) :
+                            ""}
+                    </td>);
+                }
                 )
             );
         }
 
-        //skip first sub row becuase we're already rendering it 
-        if (row.getParentRow()?.original == row.original)
-            return
-
+        // //TODO: fix this only works if not sorted need to fix that edge case
+        // //skip first sub row becuase we're already rendering it 
         return (
-            row.getVisibleCells().map(cell => (
-                <td
-                    key={cell.id}
-                    className="border-r bg-blue-50 border-gray-200 last:border-r-0 py-1 px-1"
-                    style={{
-                        // width: cell.column.getSize(),
-                        width: cell.column.columnDef.size,
-                        minWidth: cell.column.columnDef.minSize,
-                        maxWidth: cell.column.columnDef.maxSize,
-                    }}
-                >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-            ))
-        );
+            row.getAllCells().map(cell => {
+                const isFirstRowColumn = firstRowColumns.includes(cell.column.id);
+
+                return (
+                    <td
+                        key={cell.id}
+                        className={subRowClasses}
+                    >
+                        {!isFirstRowColumn && flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                );
+            })
+        )
 
     }
 
